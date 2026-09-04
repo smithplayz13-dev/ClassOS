@@ -6,7 +6,9 @@ import { Filters, type FilterState } from "@/components/assignments/Filters";
 import { WorkCard } from "@/components/assignments/WorkCard";
 import { isOverdue, urgencyScore, type WorkItem } from "@/lib/assignments";
 import { mockWorkItems } from "@/lib/assignmentsMock";
+import { AnimatedPillTabs, TabContent } from "@/components/ui/AnimatedTabs";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 
 type View = "list" | "calendar" | "upcoming";
@@ -127,59 +129,63 @@ export default function AssignmentsPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs text-zinc-400">{stats.todo} active • {stats.overdue} overdue • {stats.done} done</span>
-            <div className="hidden sm:flex rounded-full bg-zinc-900 border border-zinc-800 p-1">
-              {(["list", "calendar", "upcoming"] as View[]).map((v) => (
-                <button key={v} onClick={() => setView(v)} className={`rounded-full px-4 py-1.5 text-xs font-medium capitalize ${view === v ? "bg-white text-zinc-900" : "text-zinc-400"}`}>{v}</button>
-              ))}
+            <div className="hidden sm:flex">
+              <AnimatedPillTabs views={["list", "calendar", "upcoming"] as const} active={view} onChange={setView} />
             </div>
           </div>
         </div>
 
-        <div className="sm:hidden flex rounded-full bg-zinc-900 border border-zinc-800 p-1 w-fit mb-4">
-          {(["list", "calendar", "upcoming"] as View[]).map((v) => (
-            <button key={v} onClick={() => setView(v)} className={`rounded-full px-4 py-1.5 text-xs font-medium capitalize ${view === v ? "bg-white text-zinc-900" : "text-zinc-400"}`}>{v}</button>
-          ))}
+        <div className="sm:hidden flex w-fit mb-4">
+          <AnimatedPillTabs views={["list", "calendar", "upcoming"] as const} active={view} onChange={setView} />
         </div>
 
         <Filters value={filters} onChange={setFilters} />
         <p className="mt-3 text-xs text-zinc-500">Showing {filtered.length} of {items.length} • Sorted by due date • Urgency 0–100 (higher = do first)</p>
 
-        {view === "list" && (
-          <div className="mt-6">
-            {listSorted.length === 0 ? (
-              <Empty onAdd={() => setModal({ open: true, item: null })} />
-            ) : (
-              <div className="grid gap-4">
-                {listSorted.map((it) => (
-                  <WorkCard key={it.id} item={it} onToggle={toggleDone} onEdit={(w) => setModal({ open: true, item: w })} onDelete={remove} onAddSubtask={addSub} onToggleSubtask={toggleSub} />
-                ))}
+        <div className="mt-6">
+          <TabContent view={view}>
+            {view === "list" && (
+              <div>
+                {listSorted.length === 0 ? (
+                  <Empty onAdd={() => setModal({ open: true, item: null })} />
+                ) : (
+                  <motion.div className="grid gap-4" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}>
+                    {listSorted.map((it) => (
+                      <motion.div key={it.id} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}>
+                        <WorkCard item={it} onToggle={toggleDone} onEdit={(w) => setModal({ open: true, item: w })} onDelete={remove} onAddSubtask={addSub} onToggleSubtask={toggleSub} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        {view === "calendar" && (
-          <div className="mt-6">
-            <CalendarView items={filtered} onEdit={(w) => setModal({ open: true, item: w })} />
-            <p className="mt-3 text-xs text-zinc-600">Calendar shows current month. Overdue items in red.</p>
-          </div>
-        )}
-
-        {view === "upcoming" && (
-          <div className="mt-6 space-y-4">
-            {upcoming.length === 0 ? (
-              <Empty onAdd={() => setModal({ open: true, item: null })} label="No upcoming — all caught up! 🎉" />
-            ) : (
-              upcoming.map((it) => (
-                <WorkCard key={it.id} item={it} onToggle={toggleDone} onEdit={(w) => setModal({ open: true, item: w })} onDelete={remove} onAddSubtask={addSub} onToggleSubtask={toggleSub} />
-              ))
+            {view === "calendar" && (
+              <div>
+                <CalendarView items={filtered} onEdit={(w) => setModal({ open: true, item: w })} />
+                <p className="mt-3 text-xs text-zinc-600">Calendar shows current month. Overdue items in red.</p>
+              </div>
             )}
-            <div className="card rounded-[20px] p-4">
-              <h4 className="text-sm font-semibold text-white mb-2">How urgency is scored</h4>
-              <p className="text-xs leading-relaxed text-zinc-400">Time pressure (overdue 50, today 48...) + priority/importance (high 20) + difficulty bonus + subtask progress penalty + est. time. Range 0–100. AI planner can simply sort by <code className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5">urgencyScore()</code> — see <code className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5">src/lib/assignments.ts</code>.</p>
-            </div>
-          </div>
-        )}
+
+            {view === "upcoming" && (
+              <motion.div className="space-y-4" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}>
+                {upcoming.length === 0 ? (
+                  <Empty onAdd={() => setModal({ open: true, item: null })} label="No upcoming — all caught up! 🎉" />
+                ) : (
+                  upcoming.map((it) => (
+                    <motion.div key={it.id} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+                      <WorkCard item={it} onToggle={toggleDone} onEdit={(w) => setModal({ open: true, item: w })} onDelete={remove} onAddSubtask={addSub} onToggleSubtask={toggleSub} />
+                    </motion.div>
+                  ))
+                )}
+                <div className="card rounded-[20px] p-4">
+                  <h4 className="text-sm font-semibold text-white mb-2">How urgency is scored</h4>
+                  <p className="text-xs leading-relaxed text-zinc-400">Time pressure (overdue 50, today 48...) + priority/importance (high 20) + difficulty bonus + subtask progress penalty + est. time. Range 0–100. AI planner can simply sort by <code className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5">urgencyScore()</code> — see <code className="rounded bg-zinc-800 border border-zinc-700 px-1.5 py-0.5">src/lib/assignments.ts</code>.</p>
+                </div>
+              </motion.div>
+            )}
+          </TabContent>
+        </div>
       </main>
 
       <EditWorkModal open={modal.open} initial={modal.item ?? null} onClose={() => setModal({ open: false })} onSave={save} />

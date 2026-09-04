@@ -6,6 +6,8 @@ import { TimetableGrid } from "@/components/timetable/TimetableGrid";
 import { weeklyTimetable as initial } from "@/lib/timetableMock";
 import { WEEKDAYS } from "@/lib/timetable";
 import type { ClassPeriod, WeekDay } from "@/lib/types";
+import { AnimatedPillTabs, TabContent } from "@/components/ui/AnimatedTabs";
+import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
@@ -102,13 +104,7 @@ export default function TimetablePage() {
             <h1 className="text-[24px] sm:text-[28px] font-semibold tracking-tight text-white">Timetable</h1>
             <p className="mt-1 text-sm text-zinc-400">Mon–Sat • Tap any slot to add • Drag to move • Click to edit</p>
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-zinc-900 border border-zinc-800 p-1">
-            {(["week", "today", "agenda"] as const).map((v) => (
-              <button key={v} onClick={() => setView(v)} className={`rounded-full px-4 py-1.5 text-xs font-medium capitalize transition-colors ${view === v ? "bg-white text-zinc-900" : "text-zinc-400 hover:text-white"}`}>
-                {v}
-              </button>
-            ))}
-          </div>
+          <AnimatedPillTabs views={["week", "today", "agenda"] as const} active={view} onChange={setView} />
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
@@ -122,39 +118,43 @@ export default function TimetablePage() {
           </span>
         </div>
 
-        {dragHint && <div className="mb-3 rounded-xl bg-white text-zinc-900 px-3 py-2 text-xs font-medium text-center">Moved — drop to reschedule ✓</div>}
+        {dragHint && <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="mb-3 rounded-xl bg-white text-zinc-900 px-3 py-2 text-xs font-medium text-center">Moved — drop to reschedule ✓</motion.div>}
 
-        {/* Desktop / Weekly */}
-        <div className={view === "agenda" ? "hidden md:block" : ""}>
-          {view === "week" && (
-            <TimetableGrid entries={entries} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
-          )}
-          {view === "today" && (
-            <div className="hidden md:block">
-              <TimetableGrid entries={entries} selectedDay={today} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
-            </div>
-          )}
-          {view === "agenda" && (
-            <div className="hidden md:block">
-              <TimetableGrid entries={entries} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
-            </div>
-          )}
-        </div>
-
-        {/* Mobile views */}
-        <div className="md:hidden">
-          {view === "week" && <AgendaView entries={entries} onEdit={(c) => setModal({ open: true, data: c })} />}
-          {view === "today" && (
-            <div className="space-y-4">
-              <div className="card rounded-[20px] p-4">
-                <h3 className="text-sm font-semibold text-white">{today} — Today</h3>
-                <p className="text-xs text-zinc-500">{todayEntries.length} classes</p>
+        <TabContent view={view}>
+          {/* Desktop / Weekly */}
+          <div className={view === "agenda" ? "hidden md:block" : ""}>
+            {view === "week" && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
+                <TimetableGrid entries={entries} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
+              </motion.div>
+            )}
+            {view === "today" && (
+              <div className="hidden md:block">
+                <TimetableGrid entries={entries} selectedDay={today} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
               </div>
-              <AgendaView entries={todayEntries} onEdit={(c) => setModal({ open: true, data: c })} />
-            </div>
-          )}
-          {view === "agenda" && <AgendaView entries={entries} onEdit={(c) => setModal({ open: true, data: c })} />}
-        </div>
+            )}
+            {view === "agenda" && (
+              <div className="hidden md:block">
+                <TimetableGrid entries={entries} onSlotClick={handleAdd} onEdit={(c) => setModal({ open: true, data: c })} onMove={handleMove} onResize={handleResize} currentId={currentId} nextId={nextId} />
+              </div>
+            )}
+          </div>
+
+          {/* Mobile views */}
+          <div className="md:hidden">
+            {view === "week" && <AgendaView entries={entries} onEdit={(c) => setModal({ open: true, data: c })} />}
+            {view === "today" && (
+              <motion.div initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }} className="space-y-4">
+                <div className="card rounded-[20px] p-4">
+                  <h3 className="text-sm font-semibold text-white">{today} — Today</h3>
+                  <p className="text-xs text-zinc-500">{todayEntries.length} classes</p>
+                </div>
+                <AgendaView entries={todayEntries} onEdit={(c) => setModal({ open: true, data: c })} />
+              </motion.div>
+            )}
+            {view === "agenda" && <AgendaView entries={entries} onEdit={(c) => setModal({ open: true, data: c })} />}
+          </div>
+        </TabContent>
 
         {/* legend */}
         <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
