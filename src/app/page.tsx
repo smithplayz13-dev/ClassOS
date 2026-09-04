@@ -38,6 +38,7 @@ export default function Page() {
             <nav className="hidden md:flex items-center gap-1 ml-2">
               <Link href="/" className="rounded-full bg-white text-zinc-900 px-3 py-1 text-xs font-semibold">Dashboard</Link>
               <Link href="/timetable" className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-medium text-zinc-400 hover:text-white">Timetable</Link>
+              <Link href="/assignments" className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-medium text-zinc-400 hover:text-white">Assignments</Link>
             </nav>
           </div>
           <div className="flex items-center gap-2">
