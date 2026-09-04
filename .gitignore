@@ -1,0 +1,19 @@
+# OpenCode / local instructions - never push
+AGENTS.md
+
+# Dependencies
+node_modules/
+.next/
+dist/
+build/
+out/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+.env
+.env.*
+!.env.example
