@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CatchUp } from "@/components/dashboard/CatchUp";
 import { FocusNow } from "@/components/dashboard/FocusNow";
 import { QuickActions } from "@/components/dashboard/QuickActions";
@@ -34,12 +35,17 @@ export default function Page() {
             <div className="h-8 w-8 rounded-xl bg-white text-zinc-900 grid place-items-center font-bold text-sm tracking-tight">◐</div>
             <span className="text-[15px] font-semibold tracking-tight text-white">ClassOS</span>
             <span className="hidden sm:inline-flex rounded-full border border-zinc-800 bg-zinc-900 px-2.5 py-1 text-xs font-medium text-zinc-400">{student.grade}</span>
+            <nav className="hidden md:flex items-center gap-1 ml-2">
+              <Link href="/" className="rounded-full bg-white text-zinc-900 px-3 py-1 text-xs font-semibold">Dashboard</Link>
+              <Link href="/timetable" className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-medium text-zinc-400 hover:text-white">Timetable</Link>
+            </nav>
           </div>
           <div className="flex items-center gap-2">
             <span className="hidden md:inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
               Workload · {totalHours.toFixed(1)}h this week
             </span>
+            <Link href="/timetable" className="md:hidden rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300">Timetable</Link>
             <div className="h-8 w-8 rounded-full bg-zinc-800 border border-zinc-700 grid place-items-center text-sm font-medium text-zinc-200">
               {student.avatar}
             </div>

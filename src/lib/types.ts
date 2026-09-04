@@ -9,6 +9,8 @@ export type Subject = {
   dot: string;
 };
 
+export type WeekDay = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
+
 export type ClassPeriod = {
   id: string;
   subjectId: string;
@@ -17,6 +19,9 @@ export type ClassPeriod = {
   start: string; // "09:00"
   end: string;
   teacher: string;
+  day?: WeekDay;
+  color?: string; // hex or tailwind key override
+  recurring?: boolean;
 };
 
 export type Task = {
