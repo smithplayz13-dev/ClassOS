@@ -18,6 +18,7 @@ const server = spawn(
   ],
   { stdio: "ignore", windowsHide: true },
 );
+await mkdir(resolve(".artifacts/lighthouse-profile"), { recursive: true });
 let chrome;
 try {
   let ready = false;
