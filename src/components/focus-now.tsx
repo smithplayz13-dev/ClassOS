@@ -42,10 +42,15 @@ export function FocusNowCard({
       <h2 id="focus-now-title">{task.title}</h2>
       <p className="focus-now-reason">{priorityReason(task, today)}</p>
       <div className="focus-now-meta">
-        <span className={`due-tag ${urgent ? "urgent" : ""}`}>{dueLabel(task.dueDate, today)}</span>
+        <span className={`due-tag ${urgent ? "urgent" : ""}`}>
+          {dueLabel(task.dueDate, today)}
+        </span>
         <span className="meta-separator">·</span>
         <span className="muted">
-          {task.type === "catch_up" ? "Catch-Up" : task.type.charAt(0).toUpperCase() + task.type.slice(1)} · Importance {task.importance}/5
+          {task.type === "catch_up"
+            ? "Catch-Up"
+            : task.type.charAt(0).toUpperCase() + task.type.slice(1)}{" "}
+          · Importance {task.importance}/5
         </span>
       </div>
       <div className="action-row" style={{ marginTop: 16 }}>

@@ -57,30 +57,32 @@ export default async function DashboardPage() {
         description={`Welcome back, ${student.name.split(" ")[0]}. Let's make today feel manageable.`}
         action={<AddTaskButton subjects={student.subjects} today={today} />}
       />
-      <div className="day-banner">
-        <span className="banner-icon">
-          <Sun size={23} />
-        </span>
-        <div>
-          <strong>
+      <div className="dashboard-overview">
+        <FocusNowCard task={activeTasks[0] ?? null} today={today} />
+        <div className="day-banner">
+          <span className="banner-icon">
+            <Sun size={23} />
+          </span>
+          <div>
+            <strong>
+              {student.scheduleRevision !== student.plannedRevision
+                ? "Your workload changed. Let's make room."
+                : "Your day, in balance."}
+            </strong>
+            <p>
+              {minutes <= student.dailyStudyLimit
+                ? `${minutes} minutes of study planned, with room to breathe.`
+                : `${minutes} minutes planned. Your day is above your study limit.`}
+            </p>
+          </div>
+          <Link href="/planner">
             {student.scheduleRevision !== student.plannedRevision
-              ? "Your workload changed. Let's make room."
-              : "Your day, in balance."}
-          </strong>
-          <p>
-            {minutes <= student.dailyStudyLimit
-              ? `${minutes} minutes of study planned, with room to breathe.`
-              : `${minutes} minutes planned. Your day is above your study limit.`}
-          </p>
+              ? "Review adapted plan"
+              : "See your plan"}
+            <ArrowRight size={16} />
+          </Link>
         </div>
-        <Link href="/planner">
-          {student.scheduleRevision !== student.plannedRevision
-            ? "Review adapted plan"
-            : "See your plan"}
-          <ArrowRight size={16} />
-        </Link>
       </div>
-      <FocusNowCard task={activeTasks[0] ?? null} today={today} />
       <div className="stats-grid">
         <div className="stat">
           <span className="stat-label">

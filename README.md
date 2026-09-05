@@ -50,7 +50,7 @@ Workload changes automatically produce a revised proposal. Applying it is an exp
 
 ## Stack
 
-Next.js 16 App Router, React 19, strict TypeScript, Tailwind CSS 4 with shared CSS design tokens, Lucide icons, Prisma 7, local SQLite through `@prisma/adapter-better-sqlite3`, and Zod 4. Native HTML dialogs provide modal focus containment and Escape handling. The interface uses system fonts and a generated PNG app icon, with no remote asset dependency.
+Next.js 16 App Router, React 19, strict TypeScript, Tailwind CSS 4 with shared CSS design tokens, self-hosted Geist typography, Lucide icons, Prisma 7, local SQLite through `@prisma/adapter-better-sqlite3`, and Zod 4. Native HTML dialogs provide modal focus containment and Escape handling. GSAP and ScrollTrigger are split into an idle-loaded enhancement so the complete server-rendered interface remains usable before motion loads. A generated PNG app icon keeps the visual shell free of remote asset dependencies.
 
 Vitest covers pure domain logic; Playwright runs against the production build. `package-lock.json` is included for reproducible versions. TypeScript 6 and ESLint 9 are selected for compatibility with Next.js's current lint plugins. Narrow overrides update `deepmerge-ts` and `mysql2` in Prisma's CLI dependency tree to patched versions; migrations, seeding, and build checks exercise those overrides. npm's `allowScripts` lists only the installed native/build dependencies that require lifecycle scripts.
 

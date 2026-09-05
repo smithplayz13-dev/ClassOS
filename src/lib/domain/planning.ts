@@ -34,7 +34,9 @@ export function priorityScore(task: PrioritizableTask, today: string): number {
   );
 }
 
-export function priorityBand(score: number): "Critical" | "High" | "Medium" | "Low" {
+export function priorityBand(
+  score: number,
+): "Critical" | "High" | "Medium" | "Low" {
   if (score >= 85) return "Critical";
   if (score >= 65) return "High";
   if (score >= 40) return "Medium";

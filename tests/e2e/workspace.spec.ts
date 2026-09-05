@@ -23,9 +23,15 @@ test("all workspace routes render at desktop and mobile sizes", async ({
     ]) {
       await page.goto(route);
       await expect(page.locator("main h1")).toBeVisible();
-      await expect(
-        page.getByRole("navigation", { name: "Main navigation" }),
-      ).toBeVisible();
+      if (viewport.width <= 760) {
+        await expect(
+          page.getByRole("button", { name: "Open navigation" }),
+        ).toBeVisible();
+      } else {
+        await expect(
+          page.getByRole("navigation", { name: "Main navigation" }),
+        ).toBeVisible();
+      }
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= window.innerWidth,

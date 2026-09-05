@@ -17,12 +17,27 @@ export function PageTitle({
   description: string;
   action?: ReactNode;
 }) {
+  const words = description.split(" ");
   return (
     <div className="page-heading">
-      <div>
+      <div className="page-heading-copy">
         <p className="eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p className="page-description">{description}</p>
+        <h1>
+          {title}
+          <span className="heading-signal" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </h1>
+        <p className="page-description">
+          {words.map((word, index) => (
+            <span className="word" key={`${word}-${index}`}>
+              {word}
+              {index < words.length - 1 ? " " : ""}
+            </span>
+          ))}
+        </p>
       </div>
       {action && <div className="page-action">{action}</div>}
     </div>
