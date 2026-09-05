@@ -1,30 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-  preload: false,
-});
+import "./workflows.css";
+export const viewport: Viewport = { themeColor: "#141517" };
 
 export const metadata: Metadata = {
-  title: "ClassOS — Student Dashboard",
-  description: "Your day at a glance. Focus on what matters first.",
+  title: {
+    default: "ClassOS | Your day, in balance",
+    template: "%s | ClassOS",
+  },
+  description: "Your school schedule adapts when real life interrupts it.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full dark`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }

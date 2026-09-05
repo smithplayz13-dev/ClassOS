@@ -1,13 +1,13 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  compress: true,
-  poweredByHeader: false,
-  reactStrictMode: true,
-  allowedDevOrigins: ["127.0.0.1"],
-  experimental: {
-    optimizePackageImports: ["framer-motion"],
-  },
+const config: NextConfig = {
+  serverExternalPackages: [
+    "@prisma/adapter-better-sqlite3",
+    "better-sqlite3",
+    "pdf-parse",
+    "tesseract.js",
+  ],
+  devIndicators: false,
 };
 
-export default nextConfig;
+export default config;

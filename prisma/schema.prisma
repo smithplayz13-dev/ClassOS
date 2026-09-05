@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum TaskType {
+  assignment
+  homework
+  project
+  classwork
+  reading
+  catch_up
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  completed
+}
+
+enum AbsenceStatus {
+  recorded
+  recovering
+  resolved
+}
+
+enum SourceType {
+  text
+  document
+  image
+}
+
+enum ProcessingStatus {
+  pending
+  processed
+  failed
+}
+
+enum SessionStatus {
+  planned
+  completed
+  skipped
+}
+
+model Student {
+  id                      String @id @default(cuid())
+  name                    String
+  timezone                String @default("Asia/Kolkata")
+  preferredStudyStartTime String @default("16:00")
+  dailyStudyLimit          Int    @default(120)
+  scheduleRevision        Int    @default(0)
+  plannedRevision         Int    @default(-1)
+  studyBlockMinutes       Int    @default(30)
+  breakMinutes            Int    @default(10)
+  subjects                Subject[]
+  tasks                   AcademicTask[]
+  tests                   Test[]
+  absences                Absence[]
+  sessions                StudySession[]
+}
+
+model Subject {
+  id        String @id @default(cuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  name      String
+  teacher   String
+  room      String
+  color     String
+  timetable TimetableEntry[]
+  tasks     AcademicTask[]
+  tests     Test[]
+
+  @@index([studentId])
+}
+
+model TimetableEntry {
+  id        String @id @default(cuid())
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  recurring Boolean @default(true)
+
+  @@index([subjectId, dayOfWeek])
+}
+
+model AcademicTask {
+  id               String @id @default(cuid())
+  studentId        String
+  student          Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId        String
+  subject          Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  title            String
+  description      String @default("")
+  type             TaskType @default(assignment)
+  dueDate          String
+  estimatedMinutes Int
+  difficulty       Int @default(3)
+  importance       Int @default(3)
+  priority         Int @default(0)
+  status           TaskStatus @default(todo)
+  sourceId         String?
+  testId           String? @unique
+  test             Test? @relation(fields: [testId], references: [id], onDelete: Cascade)
+  source           MissedWorkSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  createdAt        DateTime @default(now())
+  completedAt      DateTime?
+  sessions         StudySession[]
+
+  @@index([studentId, status, dueDate])
+}
+
+model Test {
+  id                    String @id @default(cuid())
+  studentId             String
+  student               Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId             String
+  subject               Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  title                 String
+  date                  String
+  topics                String
+  importance            Int @default(3)
+  estimatedStudyMinutes Int
+  progress              Int @default(0)
+  preparation           AcademicTask?
+
+  @@index([studentId, date])
+}
+
+model Absence {
+  id        String @id @default(cuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date      String
+  notes     String @default("")
+  status    AbsenceStatus @default(recorded)
+  sources   MissedWorkSource[]
+
+  @@unique([studentId, date])
+}
+
+model MissedWorkSource {
+  id               String @id @default(cuid())
+  absenceId        String
+  absence          Absence @relation(fields: [absenceId], references: [id], onDelete: Cascade)
+  sourceType       SourceType @default(text)
+  title            String
+  originalText     String
+  processingStatus ProcessingStatus @default(pending)
+  contentHash      String?
+  suggestions     String @default("[]")
+  providerName    String @default("Deterministic text parser")
+  reviewedAt      DateTime?
+  tasks            AcademicTask[]
+
+  @@unique([absenceId, contentHash])
+}
+
+model StudySession {
+  id        String @id @default(cuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  taskId    String
+  task      AcademicTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  date      String
+  startTime String
+  duration  Int
+  status    SessionStatus @default(planned)
+  locked    Boolean @default(false)
+
+  @@index([studentId, date])
+}
