@@ -1,9 +1,13 @@
 "use client";
 
-import { CalendarView } from "@/components/assignments/CalendarView";
-import { EditWorkModal } from "@/components/assignments/EditWorkModal";
+import dynamic from "next/dynamic";
 import { Filters, type FilterState } from "@/components/assignments/Filters";
 import { WorkCard } from "@/components/assignments/WorkCard";
+
+const CalendarView = dynamic(() => import("@/components/assignments/CalendarView").then((m) => m.CalendarView), {
+  loading: () => <div className="card rounded-[20px] h-[420px] animate-pulse bg-zinc-900/50" />,
+});
+const EditWorkModal = dynamic(() => import("@/components/assignments/EditWorkModal").then((m) => m.EditWorkModal), { ssr: false });
 import { isOverdue, urgencyScore, type WorkItem } from "@/lib/assignments";
 import { mockWorkItems } from "@/lib/assignmentsMock";
 import { AnimatedPillTabs, TabContent } from "@/components/ui/AnimatedTabs";

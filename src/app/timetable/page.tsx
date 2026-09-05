@@ -1,8 +1,14 @@
 "use client";
 
 import { AgendaView } from "@/components/timetable/AgendaView";
-import { EditModal } from "@/components/timetable/EditModal";
-import { TimetableGrid } from "@/components/timetable/TimetableGrid";
+import dynamic from "next/dynamic";
+
+const TimetableGrid = dynamic(() => import("@/components/timetable/TimetableGrid").then((m) => m.TimetableGrid), {
+  loading: () => <div className="card rounded-[20px] h-[480px] animate-pulse bg-zinc-900/50" />,
+});
+const EditModal = dynamic(() => import("@/components/timetable/EditModal").then((m) => m.EditModal), {
+  ssr: false,
+});
 import { weeklyTimetable as initial } from "@/lib/timetableMock";
 import { WEEKDAYS } from "@/lib/timetable";
 import type { ClassPeriod, WeekDay } from "@/lib/types";
