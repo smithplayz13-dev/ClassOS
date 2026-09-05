@@ -18,13 +18,27 @@ export function urgency(dueDate: string, today: string): number {
   return 20;
 }
 
+/** Centralized weight config — do not scatter magic numbers (PRD 19). */
+export const priorityWeights = {
+  urgency: 0.6,
+  importance: 6,
+  difficulty: 2,
+} as const;
+
 export function priorityScore(task: PrioritizableTask, today: string): number {
   if (task.status === "completed") return 0;
   return Math.round(
-    urgency(task.dueDate, today) * 0.6 +
-      task.importance * 6 +
-      task.difficulty * 2,
+    urgency(task.dueDate, today) * priorityWeights.urgency +
+      task.importance * priorityWeights.importance +
+      task.difficulty * priorityWeights.difficulty,
   );
+}
+
+export function priorityBand(score: number): "Critical" | "High" | "Medium" | "Low" {
+  if (score >= 85) return "Critical";
+  if (score >= 65) return "High";
+  if (score >= 40) return "Medium";
+  return "Low";
 }
 
 export type PlannedBlock = {

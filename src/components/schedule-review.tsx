@@ -68,7 +68,7 @@ export function ScheduleReview({ proposal }: { proposal: Proposal }) {
               .filter((s) => s.date === date)
               .map((session) => (
                 <div
-                  className="proposal-block"
+                  className="proposal-block recently-moved"
                   key={`${session.taskId}-${session.date}-${session.startTime}`}
                 >
                   <time>{session.startTime}</time>

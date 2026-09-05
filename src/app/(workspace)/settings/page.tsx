@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getProfile } from "@/lib/db/repository";
 import { PageTitle, SectionTitle } from "@/components/ui";
 import { PreferencesForm } from "@/components/forms";
+import { ResetDemoButton } from "@/components/reset-demo";
 
 export const metadata: Metadata = { title: "Settings" };
 
@@ -45,6 +46,7 @@ export default async function SettingsPage() {
             </div>
           </dl>
           <p className="muted">ClassOS / Local MVP</p>
+          <ResetDemoButton />
         </aside>
       </div>
     </>

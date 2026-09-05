@@ -1449,6 +1449,70 @@ progress::-moz-progress-bar {
   }
 }
 
+.focus-now {
+  border: 1px solid #343a33;
+  background: linear-gradient(180deg, #1d241d 0%, #1a1e1c 100%);
+  border-radius: 10px;
+  padding: 22px 20px;
+  margin-bottom: 24px;
+  animation: page-enter 180ms ease-out;
+}
+.focus-now.empty {
+  border-style: dashed;
+  background: #1b1c1f;
+}
+.focus-now-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.focus-now-header .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #263025;
+  border-color: #32412f;
+  color: #b7d1a8;
+}
+.focus-now-header .pill-urgent {
+  background: #3a2d20;
+  border-color: #5a4430;
+  color: #e2b482;
+}
+.focus-now-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.focus-now h2 {
+  font-size: 20px;
+  line-height: 1.35;
+  margin: 10px 0 8px;
+  overflow-wrap: anywhere;
+}
+.focus-now-reason {
+  color: #a8b8a0;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  max-width: 62ch;
+}
+.focus-now-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+.focus-now .subject-label {
+  font-size: 12px;
+}
+
 @media (min-width: 1600px) {
   .main-content {
     padding-top: 45px;

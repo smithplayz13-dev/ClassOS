@@ -111,6 +111,18 @@
   align-items: center;
   font-size: 11px;
   animation: page-enter 140ms ease-out;
+  border-left: 2px solid transparent;
+  transition: border-color 180ms, background 180ms, transform 180ms;
+  will-change: transform;
+}
+.proposal-block.recently-moved {
+  border-left-color: var(--accent);
+  background: #232d23;
+  animation: proposal-highlight 420ms ease-out, page-enter 140ms ease-out;
+}
+@keyframes proposal-highlight {
+  0% { background: #2f3d2f; }
+  100% { background: #232d23; }
 }
 .proposal-block > div {
   flex: 1;

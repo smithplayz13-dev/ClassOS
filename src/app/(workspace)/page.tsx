@@ -23,6 +23,7 @@ import {
 import { WorkloadChart } from "@/components/workload-chart";
 import { completion, studyMinutes } from "@/lib/domain/metrics";
 import { priorityReason } from "@/lib/domain/rebalance";
+import { FocusNowCard } from "@/components/focus-now";
 
 export default async function DashboardPage() {
   const { student, today, activeTasks } = await getWorkspace();
@@ -79,6 +80,7 @@ export default async function DashboardPage() {
           <ArrowRight size={16} />
         </Link>
       </div>
+      <FocusNowCard task={activeTasks[0] ?? null} today={today} />
       <div className="stats-grid">
         <div className="stat">
           <span className="stat-label">
