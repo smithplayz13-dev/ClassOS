@@ -39,6 +39,7 @@ export default function Page() {
               <Link href="/" className="rounded-full bg-white text-zinc-900 px-3 py-1 text-xs font-semibold">Dashboard</Link>
               <Link href="/timetable" className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-medium text-zinc-400 hover:text-white">Timetable</Link>
               <Link href="/assignments" className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1 text-xs font-medium text-zinc-400 hover:text-white">Assignments</Link>
+              <Link href="/planner" className="rounded-full border border-zinc-800 bg-violet-500/15 px-3 py-1 text-xs font-medium text-violet-300 hover:text-violet-200">Planner</Link>
             </nav>
           </div>
           <div className="flex items-center gap-2">
@@ -47,6 +48,7 @@ export default function Page() {
               Workload · {totalHours.toFixed(1)}h this week
             </span>
             <Link href="/timetable" className="md:hidden rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300">Timetable</Link>
+            <Link href="/planner" className="md:hidden rounded-full bg-violet-500/15 border border-violet-500/30 px-3 py-1.5 text-xs font-medium text-violet-300">Planner</Link>
             <div className="h-8 w-8 rounded-full bg-zinc-800 border border-zinc-700 grid place-items-center text-sm font-medium text-zinc-200">
               {student.avatar}
             </div>

@@ -93,6 +93,7 @@ export default function TimetablePage() {
           <div className="flex items-center gap-2">
             <Link href="/" className="hidden sm:inline-flex rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-800">← Dashboard</Link>
             <Link href="/assignments" className="hidden sm:inline-flex rounded-full border border-zinc-800 bg-zinc-900 px-4 py-1.5 text-xs font-medium text-zinc-300 hover:bg-zinc-800">Assignments</Link>
+            <Link href="/planner" className="hidden sm:inline-flex rounded-full border border-violet-500/30 bg-violet-500/15 px-4 py-1.5 text-xs font-medium text-violet-300">Planner</Link>
             <button onClick={() => setModal({ open: true, data: null })} className="rounded-full bg-white text-zinc-900 px-4 py-1.5 text-xs font-semibold">＋ Add class</button>
           </div>
         </div>
