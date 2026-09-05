@@ -47,6 +47,7 @@ export default function Page() {
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
               Workload · {totalHours.toFixed(1)}h this week
             </span>
+            <Link href="/missed" className="hidden md:inline-flex items-center gap-2 rounded-full bg-amber-500 text-zinc-900 px-3 py-1.5 text-xs font-semibold">I Missed School</Link>
             <Link href="/timetable" className="md:hidden rounded-full bg-zinc-900 border border-zinc-800 px-3 py-1.5 text-xs font-medium text-zinc-300">Timetable</Link>
             <Link href="/planner" className="md:hidden rounded-full bg-violet-500/15 border border-violet-500/30 px-3 py-1.5 text-xs font-medium text-violet-300">Planner</Link>
             <div className="h-8 w-8 rounded-full bg-zinc-800 border border-zinc-700 grid place-items-center text-sm font-medium text-zinc-200">
