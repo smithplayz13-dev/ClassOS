@@ -1451,16 +1451,17 @@ progress::-moz-progress-bar {
 }
 
 .focus-now {
-  border: 1px solid #343a33;
-  background: linear-gradient(180deg, #1d241d 0%, #1a1e1c 100%);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 11px;
   padding: 22px 20px;
   margin-bottom: 24px;
-  animation: page-enter 180ms ease-out;
+  box-shadow: var(--shadow);
+  animation: page-enter 220ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .focus-now.empty {
-  border-style: dashed;
-  background: #1b1c1f;
+  border: 1px solid var(--border);
+  background: var(--surface);
 }
 .focus-now-header {
   display: flex;
@@ -1473,14 +1474,14 @@ progress::-moz-progress-bar {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #263025;
-  border-color: #32412f;
-  color: #b7d1a8;
+  background: var(--accent-dark);
+  border-color: var(--border);
+  color: var(--accent-strong);
 }
 .focus-now-header .pill-urgent {
-  background: #3a2d20;
-  border-color: #5a4430;
-  color: #e2b482;
+  background: #fbefdf;
+  border-color: #e4d3b8;
+  color: #89551b;
 }
 .focus-now-time {
   display: inline-flex;
@@ -1497,7 +1498,7 @@ progress::-moz-progress-bar {
   overflow-wrap: anywhere;
 }
 .focus-now-reason {
-  color: #a8b8a0;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.6;
   margin-bottom: 12px;
