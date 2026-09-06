@@ -3,7 +3,7 @@ import { getWorkspace } from "@/lib/db/repository";
 import { PageTitle, SubjectLabel } from "@/components/ui";
 import { MapPin, UserRound } from "lucide-react";
 import { weekday } from "@/lib/domain/dates";
-import { LessonEditor } from "@/components/editors";
+import { LessonEditor, SubjectEditor } from "@/components/editors";
 
 export const metadata: Metadata = { title: "Timetable" };
 const days = [
@@ -27,7 +27,14 @@ export default async function TimetablePage() {
         eyebrow="YOUR SCHOOL WEEK"
         title="Timetable"
         description="A little structure for the days ahead."
-        action={<LessonEditor subjects={student.subjects} />}
+        action={
+          <div className="action-row">
+            <SubjectEditor />
+            {student.subjects.length > 0 && (
+              <LessonEditor subjects={student.subjects} />
+            )}
+          </div>
+        }
       />
       <div className="section-heading">
         <h2>Weekly classes</h2>
@@ -50,6 +57,13 @@ export default async function TimetablePage() {
               </span>
             </h2>
             <div className="lesson-list">
+              {!entries.some(
+                (entry) => entry.dayOfWeek === (index + 1) % 7,
+              ) && (
+                <p className="no-classes">
+                  No classes. A little breathing room.
+                </p>
+              )}
               {entries
                 .filter((entry) => entry.dayOfWeek === (index + 1) % 7)
                 .sort((a, b) => a.startTime.localeCompare(b.startTime))

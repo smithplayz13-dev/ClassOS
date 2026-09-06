@@ -3,25 +3,25 @@ import { cache } from "react";
 import { db } from "./index";
 import { dateInTimezone } from "../domain/dates";
 import { priorityScore } from "../domain/planning";
-
-// This foundation has one local demo student. Replace this boundary with a session principal before hosting.
-export const DEMO_STUDENT_ID = "student-demo";
+import { getStudentId } from "./workspace";
+import { redirect } from "next/navigation";
 
 export const getProfile = cache(async () => {
-  const student = await db.student.findUniqueOrThrow({
-    where: { id: DEMO_STUDENT_ID },
+  const student = await db.student.findUnique({
+    where: { id: await getStudentId() },
     include: {
       _count: {
         select: { tasks: { where: { status: { not: "completed" } } } },
       },
     },
   });
+  if (!student) redirect("/onboarding");
   return { student, today: dateInTimezone(new Date(), student.timezone) };
 });
 
 export const getWorkspace = cache(async (withSourceText = false) => {
   const student = await db.student.findUnique({
-    where: { id: DEMO_STUDENT_ID },
+    where: { id: await getStudentId() },
     include: {
       subjects: {
         orderBy: { name: "asc" },
@@ -51,10 +51,7 @@ export const getWorkspace = cache(async (withSourceText = false) => {
       },
     },
   });
-  if (!student)
-    throw new Error(
-      "The demo workspace has not been seeded. Run npm run db:setup.",
-    );
+  if (!student) redirect("/onboarding");
   const today = dateInTimezone(new Date(), student.timezone);
   const activeTasks = student.tasks
     .filter((task) => task.status !== "completed")

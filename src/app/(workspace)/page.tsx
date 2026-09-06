@@ -53,13 +53,13 @@ export default async function DashboardPage() {
           month: "long",
           day: "numeric",
         })}
-        title={`A little focus. A lot of possibility.`}
+        title="Today, at your pace."
         description={`Welcome back, ${student.name.split(" ")[0]}. Let's make today feel manageable.`}
         action={<AddTaskButton subjects={student.subjects} today={today} />}
       />
       <div className="dashboard-overview">
         <FocusNowCard task={activeTasks[0] ?? null} today={today} />
-        <div className="day-banner">
+        <div className="day-banner landscape-panel">
           <span className="banner-icon">
             <Sun size={23} />
           </span>
@@ -67,7 +67,7 @@ export default async function DashboardPage() {
             <strong>
               {student.scheduleRevision !== student.plannedRevision
                 ? "Your workload changed. Let's make room."
-                : "Your day, in balance."}
+                : "Make room for a little more life."}
             </strong>
             <p>
               {minutes <= student.dailyStudyLimit
@@ -177,7 +177,10 @@ export default async function DashboardPage() {
             />
             <div className="plan-summary">
               <span className="status-dot" />
-              <span>{sessions.length} sessions</span>
+              <span>
+                {sessions.length}{" "}
+                {sessions.length === 1 ? "session" : "sessions"}
+              </span>
               <span className="muted">{minutes} min total</span>
             </div>
             <StudySessions sessions={sessions} />

@@ -55,7 +55,7 @@ export function FocusNowCard({
       </div>
       <div className="action-row" style={{ marginTop: 16 }}>
         <Link className="button primary" href="/assignments">
-          Start <ArrowRight size={14} />
+          View assignment <ArrowRight size={14} />
         </Link>
         <Link className="button" href="/planner">
           Open planner

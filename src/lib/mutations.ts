@@ -1,11 +1,12 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { db } from "./db";
-import { DEMO_STUDENT_ID } from "./db/repository";
+import { getStudentId } from "./db/workspace";
 
 export async function markScheduleChanged() {
+  const studentId = await getStudentId();
   await db.student.update({
-    where: { id: DEMO_STUDENT_ID },
+    where: { id: studentId },
     data: { scheduleRevision: { increment: 1 } },
   });
 }

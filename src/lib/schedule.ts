@@ -1,13 +1,14 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { db } from "./db";
-import { DEMO_STUDENT_ID } from "./db/repository";
+import { getStudentId } from "./db/workspace";
 import { dateInTimezone } from "./domain/dates";
 import { rebalance } from "./domain/rebalance";
 
 export async function getScheduleProposal() {
+  const studentId = await getStudentId();
   const student = await db.student.findUniqueOrThrow({
-    where: { id: DEMO_STUDENT_ID },
+    where: { id: studentId },
     include: {
       tasks: {
         where: { status: { not: "completed" } },

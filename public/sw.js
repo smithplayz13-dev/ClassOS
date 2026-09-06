@@ -1,4 +1,4 @@
-const CACHE = "classos-offline-v1";
+const CACHE = "classos-offline-v2";
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => cache.add("/offline.html")),

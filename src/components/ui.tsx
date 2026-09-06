@@ -22,14 +22,7 @@ export function PageTitle({
     <div className="page-heading">
       <div className="page-heading-copy">
         <p className="eyebrow">{eyebrow}</p>
-        <h1>
-          {title}
-          <span className="heading-signal" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-        </h1>
+        <h1 className="max-w-6xl">{title}</h1>
         <p className="page-description">
           {words.map((word, index) => (
             <span className="word" key={`${word}-${index}`}>

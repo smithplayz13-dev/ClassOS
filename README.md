@@ -37,6 +37,7 @@ The seed creates one student, six subjects, 25 recurring lessons, 11 tasks, two 
 
 ## Implemented workflows
 
+- Personal workspace: open `/onboarding`, enter your name, subjects, timezone, and study availability. Your personal data is saved separately from the demo; switch workspaces through Settings or onboarding. Settings supports adding, editing, and removing unused subjects, including their teacher, room, and color.
 - Dashboard: database-derived priorities, study sessions, workload, upcoming tests, and catch-up progress.
 - Timetable: add, edit, and delete recurring classes across seven days, with overlap validation.
 - Assignments: create, edit, delete, filter, complete and reopen tasks; create and edit tests with linked preparation tasks.
@@ -92,7 +93,7 @@ Optional AI: set `AI_PROVIDER="openai"`, `OPENAI_API_KEY`, and optionally `OPENA
 
 Uploads are limited to 5 MB, PDFs to 20 pages, extracted text to 20,000 characters, and suggestions to 20. File extensions and signatures are checked. PDF parsing and English OCR run in isolated child processes, with two concurrent files, a 45-second deadline, and a 256 MB JavaScript heap limit. Original files are not retained; extracted text and reviewed data stay in SQLite. Scanned PDFs require page-image uploads or pasted text. Deployments must retain `scripts/extract-upload.mjs`, installed dependencies, and permission to spawn Node processes; edge runtimes are unsupported.
 
-This is a **single-user local MVP**, bound to loopback by default. `DEMO_STUDENT_ID` is a deliberate identity boundary, not authentication. Before public hosting or use with real student records, add authenticated identity, per-user storage and access checks, rate limiting, backups, and an appropriate persistence/deployment strategy. No public deployment is included. Offline mode never caches private workspace pages or queues mutations; it clearly reports the disconnected state instead of pretending to save.
+This is a **single-user local MVP**, bound to loopback by default. A persistent cookie selects either the personal or demo workspace; it is not authentication. Personal data is stored in the same local SQLite file with separate ownership, and resetting the demo does not remove personal records. Before public hosting, add authenticated identity, per-user access checks, rate limiting, backups, and an appropriate persistence/deployment strategy. No public deployment is included. Offline mode never caches private workspace pages or queues mutations; it clearly reports the disconnected state instead of pretending to save.
 
 ## Commands
 

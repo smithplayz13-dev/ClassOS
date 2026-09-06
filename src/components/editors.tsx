@@ -24,6 +24,7 @@ import {
 } from "@/lib/workflow-actions";
 import { Feedback, Modal } from "./forms";
 import type { ActionState } from "@/lib/actions";
+import { saveSubject, deleteSubject } from "@/lib/personal-actions";
 
 type Subject = { id: string; name: string };
 type Field = {
@@ -70,7 +71,11 @@ function EditorForm({
                 min={field.min}
                 max={field.max}
                 maxLength={field.type ? undefined : 2000}
-                required={!["description", "topics"].includes(field.name)}
+                required={
+                  !["description", "topics", "teacher", "room"].includes(
+                    field.name,
+                  )
+                }
               />
             )}
           </label>
@@ -201,6 +206,46 @@ export function TaskEditor({
             type: "number",
             min: 1,
             max: 5,
+          },
+        ]}
+      />
+    </Modal>
+  );
+}
+export function SubjectEditor({
+  subject,
+}: {
+  subject?: Subject & { teacher: string; room: string; color: string };
+}) {
+  return (
+    <Modal
+      title={subject ? "Edit subject" : "Add subject"}
+      trigger={
+        subject ? (
+          <>
+            <Pencil size={14} />
+            <span className="sr-only">Edit {subject.name}</span>
+          </>
+        ) : (
+          <>
+            <Plus size={15} />
+            Add subject
+          </>
+        )
+      }
+    >
+      <EditorForm
+        action={saveSubject.bind(null, subject?.id ?? null)}
+        remove={subject ? () => deleteSubject(subject.id) : undefined}
+        fields={[
+          { name: "name", label: "Subject name", value: subject?.name },
+          { name: "teacher", label: "Teacher", value: subject?.teacher ?? "" },
+          { name: "room", label: "Room", value: subject?.room ?? "" },
+          {
+            name: "color",
+            label: "Color",
+            type: "color",
+            value: subject?.color ?? "#baf58f",
           },
         ]}
       />

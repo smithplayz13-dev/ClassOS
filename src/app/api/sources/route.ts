@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { db } from "@/lib/db";
-import { DEMO_STUDENT_ID } from "@/lib/db/repository";
+import { getStudentId } from "@/lib/db/workspace";
 import { extractUpload, fileKind, MAX_UPLOAD_BYTES } from "@/lib/uploads";
 import { getMissedWorkProvider } from "@/lib/ai";
 import { refreshWorkspace } from "@/lib/mutations";
@@ -16,6 +16,7 @@ const inFlight = new Map<
   Promise<{ text: string; suggestions: ExtractedWork[] }>
 >();
 export async function POST(request: Request) {
+  const studentId = await getStudentId();
   const origin = request.headers.get("origin");
   // Next may internally normalize request.url to localhost; Host retains the browser authority.
   const expectedOrigin = `${new URL(request.url).protocol}//${request.headers.get("host")}`;
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
     const absenceId = String(form.get("absenceId") ?? "");
     if (
       !(await db.absence.count({
-        where: { id: absenceId, studentId: DEMO_STUDENT_ID },
+        where: { id: absenceId, studentId: studentId },
       }))
     )
       return Response.json({ error: "Absence not found." }, { status: 404 });

@@ -167,7 +167,7 @@ export default async function CatchUpPage() {
                     borderRadius: 8,
                     padding: 16,
                     margin: "16px 0",
-                    background: "#1b1f1c",
+                    background: "var(--accent-dark)",
                   }}
                 >
                   <div
@@ -184,15 +184,7 @@ export default async function CatchUpPage() {
                       {remainingMinutes} min remaining
                     </span>
                   </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3,1fr)",
-                      gap: 12,
-                      fontSize: 11,
-                      marginBottom: 12,
-                    }}
-                  >
+                  <div className="recovery-impact-grid">
                     <div>
                       <strong>
                         <AlertTriangle
@@ -217,7 +209,7 @@ export default async function CatchUpPage() {
                       ? `Projected recovery: ${formatDate(recoveryDate, { weekday: "long", month: "short", day: "numeric" })} · ${remaining.length} tasks · ${remainingMinutes} min · ${recoveryDays} study day(s) at ${student.dailyStudyLimit} min/day`
                       : "All catch-up complete — recovery achieved"}
                   </div>
-                  <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                  <div className="action-row" style={{ marginTop: 12 }}>
                     <Link className="button primary" href="/planner">
                       Build My Catch-Up Plan
                     </Link>

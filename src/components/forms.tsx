@@ -58,7 +58,15 @@ export function Modal({
         className="modal"
         aria-label={title}
         onClick={(event) => {
-          if (event.target === event.currentTarget) ref.current?.close();
+          if (event.target !== event.currentTarget) return;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            ref.current?.close();
         }}
       >
         <div className="modal-heading">

@@ -2,7 +2,7 @@
 
 import { markScheduleChanged, refreshWorkspace } from "./mutations";
 import { db } from "./db";
-import { DEMO_STUDENT_ID } from "./db/repository";
+import { getStudentId } from "./db/workspace";
 import { absenceSchema, settingsSchema, taskSchema } from "./domain/validation";
 import { dateInTimezone } from "./domain/dates";
 import { priorityScore } from "./domain/planning";
@@ -25,12 +25,13 @@ export async function createTask(
   _previous: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = taskSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
   try {
     const student = await db.student.findUniqueOrThrow({
-      where: { id: DEMO_STUDENT_ID },
+      where: { id: studentId },
     });
     const subject = await db.subject.findFirst({
       where: { id: parsed.data.subjectId, studentId: student.id },
@@ -63,12 +64,13 @@ export async function recordAbsence(
   _previous: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = absenceSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
   try {
     const student = await db.student.findUniqueOrThrow({
-      where: { id: DEMO_STUDENT_ID },
+      where: { id: studentId },
     });
     if (parsed.data.date > dateInTimezone(new Date(), student.timezone))
       return { success: false, message: "An absence cannot be in the future." };
@@ -98,12 +100,13 @@ export async function saveSettings(
   _previous: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = settingsSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
   try {
     await db.student.update({
-      where: { id: DEMO_STUDENT_ID },
+      where: { id: studentId },
       data: parsed.data,
     });
     await markScheduleChanged();
@@ -118,6 +121,7 @@ export async function setTaskCompleted(
   id: string,
   completed: boolean,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   if (
     typeof id !== "string" ||
     id.length > 100 ||
@@ -126,7 +130,7 @@ export async function setTaskCompleted(
     return { success: false, message: "Invalid task." };
   try {
     const task = await db.academicTask.findFirst({
-      where: { id, studentId: DEMO_STUDENT_ID },
+      where: { id, studentId: studentId },
     });
     if (!task)
       return { success: false, message: "This task could not be found." };
@@ -139,7 +143,7 @@ export async function setTaskCompleted(
     });
     await db.studySession.deleteMany({
       where: {
-        studentId: DEMO_STUDENT_ID,
+        studentId: studentId,
         taskId: task.id,
         status: "planned",
         locked: false,

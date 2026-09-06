@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 const MotionEnhancer = dynamic(
-  () => import("./motion-enhancer").then((module) => module.MotionEnhancer),
+  () => import("./workspace-motion").then((module) => module.MotionEnhancer),
   { ssr: false },
 );
 
@@ -13,8 +13,8 @@ export function MotionShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setTimeout(() => setReady(true), 4000);
-    return () => window.clearTimeout(id);
+    const id = window.requestAnimationFrame(() => setReady(true));
+    return () => window.cancelAnimationFrame(id);
   }, []);
 
   return (

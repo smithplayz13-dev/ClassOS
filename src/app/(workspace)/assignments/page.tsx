@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getWorkspace } from "@/lib/db/repository";
 import { AddTaskButton } from "@/components/forms";
 import { PageTitle, SectionTitle, TaskList, TestList } from "@/components/ui";
-import { TestEditor } from "@/components/editors";
+import { TestEditor, SubjectEditor } from "@/components/editors";
 
 export const metadata: Metadata = { title: "Assignments" };
 
@@ -30,7 +30,13 @@ export default async function AssignmentsPage({
         eyebrow="YOUR COURSEWORK"
         title="Assignments"
         description="Everything on your plate, one thing at a time."
-        action={<AddTaskButton subjects={student.subjects} today={today} />}
+        action={
+          student.subjects.length ? (
+            <AddTaskButton subjects={student.subjects} today={today} />
+          ) : (
+            <SubjectEditor />
+          )
+        }
       />
       <div className="filter-bar">
         <nav className="tabs" aria-label="Assignment status">
@@ -73,7 +79,9 @@ export default async function AssignmentsPage({
       <section className="spaced-section">
         <SectionTitle title="Upcoming tests" />
         <div className="section-tools">
-          <TestEditor subjects={student.subjects} today={today} />
+          {student.subjects.length > 0 && (
+            <TestEditor subjects={student.subjects} today={today} />
+          )}
         </div>
         <TestList
           tests={student.tests.filter((test) => test.date >= today)}

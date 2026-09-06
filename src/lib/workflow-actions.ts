@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { db } from "./db";
-import { DEMO_STUDENT_ID } from "./db/repository";
+import { DEMO_STUDENT_ID, getStudentId } from "./db/workspace";
 import { calendarDateSchema, taskSchema } from "./domain/validation";
 import { markScheduleChanged, refreshWorkspace } from "./mutations";
 import { getScheduleProposal } from "./schedule";
@@ -19,6 +19,7 @@ const errorState = (error: unknown): ActionState => ({
 });
 
 export async function acceptSchedule(token: string): Promise<ActionState> {
+  const studentId = await getStudentId();
   try {
     const proposal = await getScheduleProposal();
     if (proposal.token !== token)
@@ -29,7 +30,7 @@ export async function acceptSchedule(token: string): Promise<ActionState> {
       };
     await db.$transaction(async (tx) => {
       const changed = await tx.student.updateMany({
-        where: { id: DEMO_STUDENT_ID, scheduleRevision: proposal.revision },
+        where: { id: studentId, scheduleRevision: proposal.revision },
         data: {
           plannedRevision: proposal.revision,
           scheduleRevision: { increment: 1 },
@@ -38,7 +39,7 @@ export async function acceptSchedule(token: string): Promise<ActionState> {
       if (changed.count !== 1)
         throw new Error("Please refresh the proposal; your workload changed.");
       await tx.studySession.deleteMany({
-        where: { studentId: DEMO_STUDENT_ID, status: "planned", locked: false },
+        where: { studentId: studentId, status: "planned", locked: false },
       });
       await tx.studySession.createMany({
         data: proposal.sessions.map(
@@ -47,12 +48,12 @@ export async function acceptSchedule(token: string): Promise<ActionState> {
             date,
             startTime,
             duration,
-            studentId: DEMO_STUDENT_ID,
+            studentId: studentId,
           }),
         ),
       });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { plannedRevision: proposal.revision + 1 },
       });
     });
@@ -71,6 +72,7 @@ export async function sessionAction(
   id: string,
   operation: "lock" | "unlock" | "complete" | "skip",
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   if (
     !z.string().max(100).safeParse(id).success ||
     !["lock", "unlock", "complete", "skip"].includes(operation)
@@ -79,12 +81,12 @@ export async function sessionAction(
   try {
     await db.$transaction(async (tx) => {
       const session = await tx.studySession.findFirst({
-        where: { id, studentId: DEMO_STUDENT_ID },
+        where: { id, studentId: studentId },
       });
       if (!session || session.status !== "planned")
         throw new Error("Please refresh; this session has already changed.");
       const student = await tx.student.findUniqueOrThrow({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
       });
       if (
         operation === "complete" &&
@@ -101,7 +103,7 @@ export async function sessionAction(
             : { status: operation === "complete" ? "completed" : "skipped" },
       });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
       });
     });
@@ -132,6 +134,7 @@ export async function acceptMissedWork(
   sourceId: string,
   input: unknown,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = reviewSchema.safeParse(input);
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -143,7 +146,7 @@ export async function acceptMissedWork(
       const source = await tx.missedWorkSource.findFirst({
         where: {
           id: sourceId,
-          absence: { studentId: DEMO_STUDENT_ID },
+          absence: { studentId: studentId },
           reviewedAt: null,
           processingStatus: "processed",
         },
@@ -153,7 +156,7 @@ export async function acceptMissedWork(
           "Please refresh; these notes have already been reviewed.",
         );
       const subjects = await tx.subject.findMany({
-        where: { studentId: DEMO_STUDENT_ID },
+        where: { studentId: studentId },
         select: { id: true },
       });
       if (
@@ -166,7 +169,7 @@ export async function acceptMissedWork(
         data: selected.map((task) => ({
           ...task,
           type: "catch_up",
-          studentId: DEMO_STUDENT_ID,
+          studentId: studentId,
           sourceId,
         })),
       });
@@ -179,7 +182,7 @@ export async function acceptMissedWork(
         data: { status: "recovering" },
       });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
       });
     });
@@ -194,13 +197,14 @@ export async function acceptMissedWork(
 }
 
 export async function discardSource(id: string): Promise<ActionState> {
+  const studentId = await getStudentId();
   try {
     await db.missedWorkSource.deleteMany({
       where: {
         id,
         reviewedAt: null,
         tasks: { none: {} },
-        absence: { studentId: DEMO_STUDENT_ID },
+        absence: { studentId: studentId },
       },
     });
     refreshWorkspace(["/catch-up"]);
@@ -215,17 +219,18 @@ export async function updateTask(
   _state: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = taskSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
   try {
     const subject = await db.subject.count({
-      where: { id: parsed.data.subjectId, studentId: DEMO_STUDENT_ID },
+      where: { id: parsed.data.subjectId, studentId: studentId },
     });
     if (!subject)
       throw new Error("Please choose a subject from your workspace.");
     const result = await db.academicTask.updateMany({
-      where: { id, studentId: DEMO_STUDENT_ID },
+      where: { id, studentId: studentId },
       data: parsed.data,
     });
     if (!result.count)
@@ -239,9 +244,10 @@ export async function updateTask(
 }
 
 export async function deleteTask(id: string): Promise<ActionState> {
+  const studentId = await getStudentId();
   try {
     await db.academicTask.deleteMany({
-      where: { id, studentId: DEMO_STUDENT_ID },
+      where: { id, studentId: studentId },
     });
     await markScheduleChanged();
     refreshWorkspace();
@@ -264,6 +270,7 @@ export async function saveLesson(
   _state: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = lessonSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -272,21 +279,21 @@ export async function saveLesson(
     await db.$transaction(async (tx) => {
       if (
         !(await tx.subject.count({
-          where: { id: data.subjectId, studentId: DEMO_STUDENT_ID },
+          where: { id: data.subjectId, studentId: studentId },
         }))
       )
         throw new Error("Please choose your subject.");
       if (
         id &&
         !(await tx.timetableEntry.count({
-          where: { id, subject: { studentId: DEMO_STUDENT_ID } },
+          where: { id, subject: { studentId: studentId } },
         }))
       )
         throw new Error("Please refresh this lesson.");
       const overlap = await tx.timetableEntry.findFirst({
         where: {
           id: id ? { not: id } : undefined,
-          subject: { studentId: DEMO_STUDENT_ID },
+          subject: { studentId: studentId },
           dayOfWeek: data.dayOfWeek,
           startTime: { lt: data.endTime },
           endTime: { gt: data.startTime },
@@ -299,7 +306,7 @@ export async function saveLesson(
       if (id) await tx.timetableEntry.update({ where: { id }, data });
       else await tx.timetableEntry.create({ data });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
       });
     });
@@ -310,9 +317,10 @@ export async function saveLesson(
   }
 }
 export async function deleteLesson(id: string): Promise<ActionState> {
+  const studentId = await getStudentId();
   try {
     await db.timetableEntry.deleteMany({
-      where: { id, subject: { studentId: DEMO_STUDENT_ID } },
+      where: { id, subject: { studentId: studentId } },
     });
     await markScheduleChanged();
     refreshWorkspace(["/timetable", "/planner", "/"]);
@@ -336,29 +344,27 @@ export async function saveTest(
   _state: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = testSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
   try {
     if (
       !(await db.subject.count({
-        where: { id: parsed.data.subjectId, studentId: DEMO_STUDENT_ID },
+        where: { id: parsed.data.subjectId, studentId: studentId },
       }))
     )
       throw new Error("Please choose your subject.");
     await db.$transaction(async (tx) => {
-      if (
-        id &&
-        !(await tx.test.count({ where: { id, studentId: DEMO_STUDENT_ID } }))
-      )
+      if (id && !(await tx.test.count({ where: { id, studentId: studentId } })))
         throw new Error("Please refresh; this test was removed.");
       const saved = id
         ? await tx.test.update({ where: { id }, data: parsed.data })
         : await tx.test.create({
-            data: { ...parsed.data, studentId: DEMO_STUDENT_ID },
+            data: { ...parsed.data, studentId: studentId },
           });
       const preparation = {
-        studentId: DEMO_STUDENT_ID,
+        studentId: studentId,
         subjectId: parsed.data.subjectId,
         title: `Prepare: ${parsed.data.title}`.slice(0, 160),
         description: parsed.data.topics,
@@ -373,7 +379,7 @@ export async function saveTest(
         update: preparation,
       });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
       });
     });
@@ -389,6 +395,7 @@ export async function moveSession(
   _state: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  const studentId = await getStudentId();
   const parsed = z
     .object({
       date: calendarDateSchema,
@@ -400,11 +407,11 @@ export async function moveSession(
   try {
     await db.$transaction(async (tx) => {
       const s = await tx.studySession.findFirst({
-        where: { id, studentId: DEMO_STUDENT_ID, status: "planned" },
+        where: { id, studentId: studentId, status: "planned" },
       });
       if (!s) throw new Error("Please refresh this session.");
       const student = await tx.student.findUniqueOrThrow({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
       });
       if (parsed.data.date < dateInTimezone(new Date(), student.timezone))
         throw new Error("Please choose today or a future date.");
@@ -413,13 +420,13 @@ export async function moveSession(
         throw new Error("Please choose a time before midnight.");
       if (
         await tx.absence.count({
-          where: { studentId: DEMO_STUDENT_ID, date: parsed.data.date },
+          where: { studentId: studentId, date: parsed.data.date },
         })
       )
         throw new Error("Please choose a day without a recorded absence.");
       const lessons = await tx.timetableEntry.findMany({
         where: {
-          subject: { studentId: DEMO_STUDENT_ID },
+          subject: { studentId: studentId },
           dayOfWeek: weekday(parsed.data.date),
         },
       });
@@ -433,7 +440,7 @@ export async function moveSession(
         throw new Error("Please choose another time; a class overlaps.");
       const other = await tx.studySession.findMany({
         where: {
-          studentId: DEMO_STUDENT_ID,
+          studentId: studentId,
           date: parsed.data.date,
           id: { not: id },
           status: { not: "skipped" },
@@ -461,7 +468,7 @@ export async function moveSession(
         data: { ...parsed.data, locked: true },
       });
       await tx.student.update({
-        where: { id: DEMO_STUDENT_ID },
+        where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
       });
     });
