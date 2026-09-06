@@ -126,7 +126,7 @@ export function Navigation({
         </dialog>
         <Link href="/" className="brand" aria-label="ClassOS home">
           <span className="brand-mark">
-            <Command size={21} strokeWidth={2.5} />
+            <Command size={21} strokeWidth={1.25} />
           </span>
           <span>
             Class<span className="brand-os">OS</span>

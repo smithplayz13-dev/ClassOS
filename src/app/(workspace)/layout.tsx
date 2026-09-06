@@ -17,6 +17,8 @@ export default async function WorkspaceLayout({
   const { student, today } = await getProfile();
   return (
     <div className="app-shell">
+      <div className="vanguard-orbs" aria-hidden="true" />
+      <div className="vanguard-grain" aria-hidden="true" />
       <a className="skip-link" href="#main">
         Skip to content
       </a>
