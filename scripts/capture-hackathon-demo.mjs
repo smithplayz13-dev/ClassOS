@@ -65,7 +65,9 @@ async function installDemoLayer(label) {
 }
 
 async function visit(route, chapter) {
-  await page.goto(`http://127.0.0.1:3000${route}`, { waitUntil: "networkidle" });
+  await page.goto(`http://127.0.0.1:3000${route}`, {
+    waitUntil: "networkidle",
+  });
   await installDemoLayer(chapter);
   await pause(1200);
 }
@@ -74,7 +76,9 @@ async function moveTo(locator) {
   if ((await locator.count()) === 0) return false;
   const box = await locator.first().boundingBox();
   if (!box) return false;
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 28 });
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
+    steps: 28,
+  });
   return true;
 }
 
@@ -129,7 +133,11 @@ await page.keyboard.press("Escape");
 await pause(1100);
 
 await visit("/assignments", "03  /  Assignments + tests");
-await clickIf(page.getByRole("navigation", { name: "Filter by subject" }).getByRole("link", { name: "History" }));
+await clickIf(
+  page
+    .getByRole("navigation", { name: "Filter by subject" })
+    .getByRole("link", { name: "History" }),
+);
 await pause(2200);
 await clickIf(page.getByRole("link", { name: "All" }).first());
 await pause(1700);
@@ -148,19 +156,30 @@ await clickIf(page.getByRole("link", { name: "Today", exact: true }));
 await pause(1800);
 await smoothScroll(700, 2500);
 const details = page.locator(".proposal-days details").first();
-if (await details.count()) { await clickIf(details.locator("summary")); await pause(3000); }
+if (await details.count()) {
+  await clickIf(details.locator("summary"));
+  await pause(3000);
+}
 await moveTo(page.getByRole("button", { name: "Apply this plan" }));
 await pause(1800);
 
 await visit("/catch-up", "05  /  Missed-work recovery");
 await smoothScroll(360, 2200);
 const source = page.locator(".source-details").first();
-if (await source.count()) { await clickIf(source.locator("summary")); await pause(2400); }
+if (await source.count()) {
+  await clickIf(source.locator("summary"));
+  await pause(2400);
+}
 await smoothScroll(760, 2400);
 const addNotes = page.getByText("Add lesson notes", { exact: true }).first();
-if (await addNotes.count()) { await clickIf(addNotes); await pause(2700); }
+if (await addNotes.count()) {
+  await clickIf(addNotes);
+  await pause(2700);
+}
 await smoothScroll(1080, 2300);
-await moveTo(page.getByRole("link", { name: "Build My Catch-Up Plan" }).first());
+await moveTo(
+  page.getByRole("link", { name: "Build My Catch-Up Plan" }).first(),
+);
 await pause(2000);
 
 await visit("/progress", "06  /  Progress that tells the truth");
@@ -203,5 +222,7 @@ await page.close();
 await context.close();
 await browser.close();
 const recordedPath = await video.path();
-await import("node:fs/promises").then(({ rename }) => rename(recordedPath, path.join(outputDir, "raw.webm")));
+await import("node:fs/promises").then(({ rename }) =>
+  rename(recordedPath, path.join(outputDir, "raw.webm")),
+);
 console.log(path.join(outputDir, "raw.webm"));
