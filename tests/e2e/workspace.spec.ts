@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { addDays, dateInTimezone } from "../../src/lib/domain/dates";
+import { enterDemo } from "./legal-helpers";
+
+test.beforeEach(async ({ page }) => {
+  await enterDemo(page);
+});
 
 test("all workspace routes render at desktop and mobile sizes", async ({
   page,
@@ -13,7 +18,7 @@ test("all workspace routes render at desktop and mobile sizes", async ({
   ]) {
     await page.setViewportSize(viewport);
     for (const route of [
-      "/",
+      "/dashboard",
       "/timetable",
       "/assignments",
       "/planner",
@@ -38,7 +43,7 @@ test("all workspace routes render at desktop and mobile sizes", async ({
         ),
       ).toBe(true);
     }
-    await page.goto("/");
+    await page.goto("/dashboard");
     await page.screenshot({
       path: `.artifacts/dashboard-${viewport.width}.png`,
       fullPage: true,

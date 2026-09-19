@@ -11,6 +11,7 @@ import {
 } from "./db/workspace";
 import { settingsSchema } from "./domain/validation";
 import type { ActionState } from "./actions";
+import { AGREEMENT_MESSAGE, hasSubmittedAgreement } from "./legal";
 
 const subjectSchema = z.object({
   name: z.string().trim().min(1, "Enter a subject name.").max(80),
@@ -23,6 +24,8 @@ export async function createPersonalWorkspace(
   _state: ActionState,
   form: FormData,
 ): Promise<ActionState> {
+  if (!hasSubmittedAgreement(form))
+    return { success: false, message: AGREEMENT_MESSAGE };
   const parsed = settingsSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success)
     return { success: false, message: parsed.error.issues[0].message };
@@ -75,12 +78,14 @@ export async function createPersonalWorkspace(
       message: "Could not create your workspace. Please try again.",
     };
   }
-  redirect("/timetable");
+  redirect("/dashboard");
 }
 
 export async function switchWorkspace(form: FormData) {
   const mode = form.get("mode");
   if (mode !== "personal" && mode !== "demo") return;
+  if (mode === "personal" && !hasSubmittedAgreement(form))
+    redirect("/?agreement=required#setup");
   if (
     !(await db.student.count({
       where: {
@@ -88,10 +93,10 @@ export async function switchWorkspace(form: FormData) {
       },
     }))
   )
-    redirect("/onboarding");
+    redirect("/");
   await selectWorkspace(mode);
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function saveSubject(

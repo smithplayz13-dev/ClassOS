@@ -61,6 +61,18 @@ model Student {
   tests                   Test[]
   absences                Absence[]
   sessions                StudySession[]
+  legalAcceptances        LegalAcceptance[]
+}
+
+model LegalAcceptance {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  version    String
+  tokenHash  String   @unique
+  acceptedAt DateTime @default(now())
+
+  @@index([studentId])
 }
 
 model Subject {

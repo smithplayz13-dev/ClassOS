@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import "./workflows.css";
 import "./revamp.css";
+import "./legal.css";
 export const viewport: Viewport = { themeColor: "#f7f7f5" };
 
 export const metadata: Metadata = {

@@ -17,7 +17,7 @@ export function OnboardingActions({ hasDemo }: { hasDemo: boolean }) {
   return (
     <div style={{ display: "grid", gap: 12 }}>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <Link className="button primary" href="/">
+        <Link className="button primary" href="/dashboard">
           Start using ClassOS <ArrowRight size={14} />
         </Link>
         <button
@@ -28,7 +28,7 @@ export function OnboardingActions({ hasDemo }: { hasDemo: boolean }) {
               try {
                 const result = await resetDemo();
                 setState(result);
-                if (result.success) router.push("/");
+                if (result.success) router.push("/dashboard");
               } catch {
                 setState({
                   success: false,

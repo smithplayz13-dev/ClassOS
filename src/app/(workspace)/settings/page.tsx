@@ -54,7 +54,7 @@ export default async function SettingsPage() {
           <p className="muted">Your schoolwork, with space to breathe.</p>
           {isDemo ? (
             <>
-              <Link href="/onboarding" className="button primary">
+              <Link href="/#setup" className="button primary">
                 Set up my workspace
               </Link>
               <ResetDemoButton />

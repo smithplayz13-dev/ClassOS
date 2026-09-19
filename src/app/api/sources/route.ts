@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { db } from "@/lib/db";
-import { getStudentId } from "@/lib/db/workspace";
+import { getAcceptedStudentId } from "@/lib/db/workspace";
 import { extractUpload, fileKind, MAX_UPLOAD_BYTES } from "@/lib/uploads";
 import { getMissedWorkProvider } from "@/lib/ai";
 import { refreshWorkspace } from "@/lib/mutations";
@@ -16,7 +16,15 @@ const inFlight = new Map<
   Promise<{ text: string; suggestions: ExtractedWork[] }>
 >();
 export async function POST(request: Request) {
-  const studentId = await getStudentId();
+  const studentId = await getAcceptedStudentId();
+  if (!studentId)
+    return Response.json(
+      {
+        error:
+          "Agree to the current Terms and Conditions and acknowledge the Privacy Policy before uploading notes.",
+      },
+      { status: 403 },
+    );
   const origin = request.headers.get("origin");
   // Next may internally normalize request.url to localhost; Host retains the browser authority.
   const expectedOrigin = `${new URL(request.url).protocol}//${request.headers.get("host")}`;

@@ -25,6 +25,8 @@ import { completion, studyMinutes } from "@/lib/domain/metrics";
 import { priorityReason } from "@/lib/domain/rebalance";
 import { FocusNowCard } from "@/components/focus-now";
 
+export const metadata = { title: "Dashboard" };
+
 export default async function DashboardPage() {
   const { student, today, activeTasks } = await getWorkspace();
   const sessions = student.sessions.filter(

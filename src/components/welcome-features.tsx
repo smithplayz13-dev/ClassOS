@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarRange, ListTodo, Pause, Play, Sparkles } from "lucide-react";
+import { CalendarRange, ListTodo, Sparkles } from "lucide-react";
 
 const features = [
   {
@@ -26,43 +26,45 @@ const features = [
 
 export function WelcomeFeatures() {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const subjects =
-    "Mathematics / Literature / Physics / History / Art / Chemistry / ";
+  const subjects = [
+    "Mathematics",
+    "Literature",
+    "Physics",
+    "History",
+    "Art",
+    "Chemistry",
+  ];
+
   return (
     <>
-      <div
-        className="welcome-marquee"
+      <section
+        className="subject-rail"
+        data-onboarding-reveal="up"
         aria-label="A workspace for every subject"
       >
-        <div className="marquee-row">
-          <div style={{ overflow: "hidden", flex: 1 }} aria-hidden="true">
-            <div className="marquee-track">
-              <span>{subjects}</span>
-              <span>{subjects}</span>
-            </div>
-          </div>
-          <button
-            className="icon-button"
-            aria-label={
-              paused ? "Resume subject animation" : "Pause subject animation"
-            }
-            aria-pressed={paused}
-            onClick={() => setPaused(!paused)}
-          >
-            {paused ? <Play size={15} /> : <Pause size={15} />}
-          </button>
+        <div className="subject-rail-inner">
+          <p>One place for every subject</p>
+          <ul>
+            {subjects.map((subject) => (
+              <li key={subject}>{subject}</li>
+            ))}
+          </ul>
         </div>
-      </div>
+      </section>
       <section className="welcome-features" aria-labelledby="features-title">
-        <h2 id="features-title">
+        <h2 id="features-title" data-onboarding-reveal="up">
           A clearer mind.
           <br />A little{" "}
           <span className="inline-landscape" aria-hidden="true" /> more room.
         </h2>
         <div className="feature-accordion">
           {features.map(({ title, icon: Icon, description }, index) => (
-            <article key={title} data-active={active === index}>
+            <article
+              key={title}
+              data-active={active === index}
+              data-onboarding-reveal="up"
+              data-reveal-stagger={index * 100}
+            >
               <h3>
                 <button
                   aria-expanded={active === index}

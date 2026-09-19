@@ -310,7 +310,7 @@ export async function saveLesson(
         data: { scheduleRevision: { increment: 1 } },
       });
     });
-    refreshWorkspace(["/timetable", "/planner", "/"]);
+    refreshWorkspace(["/timetable", "/planner", "/dashboard"]);
     return { success: true, message: "Timetable saved." };
   } catch (error) {
     return errorState(error);
@@ -323,7 +323,7 @@ export async function deleteLesson(id: string): Promise<ActionState> {
       where: { id, subject: { studentId: studentId } },
     });
     await markScheduleChanged();
-    refreshWorkspace(["/timetable", "/planner", "/"]);
+    refreshWorkspace(["/timetable", "/planner", "/dashboard"]);
     return { success: true, message: "Class removed." };
   } catch (error) {
     return errorState(error);
@@ -480,6 +480,11 @@ export async function moveSession(
 }
 
 export async function resetDemo(): Promise<ActionState> {
+  if ((await getStudentId()) !== DEMO_STUDENT_ID)
+    return {
+      success: false,
+      message: "Switch to the demo workspace before resetting it.",
+    };
   try {
     const { addDays } = await import("./domain/dates");
     const { dateInTimezone } = await import("./domain/dates");

@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import { createPersonalWorkspace } from "@/lib/personal-actions";
 import { Feedback } from "./forms";
+import { LegalConsent } from "./legal-consent";
 
 export function PersonalSetup() {
   const [state, action, pending] = useActionState(createPersonalWorkspace, {
@@ -98,6 +99,7 @@ export function PersonalSetup() {
           />
         </label>
       </div>
+      <LegalConsent />
       <Feedback state={state} />
       <button className="button primary fit" disabled={pending}>
         {pending ? (

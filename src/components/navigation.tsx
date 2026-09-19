@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/timetable", label: "Timetable", icon: CalendarDays },
   { href: "/assignments", label: "Assignments", icon: ListTodo },
   { href: "/planner", label: "Planner", icon: CalendarRange },
@@ -124,7 +124,11 @@ export function Navigation({
             ))}
           </nav>
         </dialog>
-        <Link href="/" className="brand" aria-label="ClassOS home">
+        <Link
+          href="/dashboard"
+          className="brand"
+          aria-label="ClassOS dashboard"
+        >
           <span className="brand-mark">
             <Command size={21} strokeWidth={1.25} />
           </span>
@@ -168,7 +172,7 @@ export function Navigation({
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <Link href="/onboarding" className="workspace-info">
+          <Link href="/#setup" className="workspace-info">
             {isDemo ? "Set up my workspace" : "Switch workspace"}
           </Link>
           <div className="sidebar-note">
@@ -199,7 +203,9 @@ export function Navigation({
       <nav className="mobile-shortcuts" aria-label="Quick navigation">
         {navigation
           .filter((item) =>
-            ["/", "/assignments", "/planner", "/catch-up"].includes(item.href),
+            ["/dashboard", "/assignments", "/planner", "/catch-up"].includes(
+              item.href,
+            ),
           )
           .map(({ href, label, icon: Icon }) => (
             <Link

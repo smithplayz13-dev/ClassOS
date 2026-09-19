@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClassOS — Vanguard Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { grotesk: ['"Space Grotesk"','"Plus Jakarta Sans"','sans-serif'], jakarta: ['"Plus Jakarta Sans"','sans-serif'] },
+    colors: { void: '#050505', vantablack: '#0A0A0B' }
+  }}
+};
+</script>
+<style>
+  :root { color-scheme: dark; --ease: cubic-bezier(0.32,0.72,0,1); }
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body { background: #050505; }
+  body { font-family: "Plus Jakarta Sans", sans-serif; color: #EDEDEF; min-height: 100dvh; overflow-x: hidden; }
+  .font-display { font-family: "Space Grotesk", "Plus Jakarta Sans", sans-serif; letter-spacing: -0.03em; }
+  .orb { position: fixed; border-radius: 9999px; pointer-events: none; filter: blur(90px); z-index: 0; }
+  .orb-a { width: 560px; height: 560px; left: -160px; top: -180px; background: radial-gradient(circle, rgba(124,92,255,.28), transparent 65%); }
+  .orb-b { width: 520px; height: 520px; right: -180px; top: 12%; background: radial-gradient(circle, rgba(52,211,153,.16), transparent 65%); }
+  .orb-c { width: 620px; height: 620px; left: 30%; bottom: -320px; background: radial-gradient(circle, rgba(124,92,255,.12), transparent 65%); }
+  .grain { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E"); }
+  .shell { background: rgba(255,255,255,.05); border-radius: 2rem; padding: .375rem; box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); transition: transform 700ms var(--ease), opacity 700ms var(--ease); }
+  .shell:hover { transform: translateY(-2px); }
+  .core { background: #0A0A0B; border-radius: calc(2rem - 0.375rem); box-shadow: inset 0 1px 1px rgba(255,255,255,.15), inset 0 -1px 0 rgba(0,0,0,.6); }
+  .eyebrow { display: inline-flex; align-items: center; gap: .5rem; border-radius: 9999px; padding: .3rem .8rem; font-size: 10px; text-transform: uppercase; letter-spacing: .2em; font-weight: 500; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); color: #B9B9C4; }
+  .btn-island { display: inline-flex; align-items: center; gap: .9rem; border-radius: 9999px; padding: .55rem .6rem .55rem 1.5rem; background: #EDEDEF; color: #0A0A0B; font-weight: 600; font-size: 14px; transition: transform 700ms var(--ease), background 700ms var(--ease), opacity 700ms var(--ease); }
+  .btn-island:hover { background: #fff; } .btn-island:active { transform: scale(.98); }
+  .btn-island .trail { width: 2rem; height: 2rem; border-radius: 9999px; background: rgba(0,0,0,.08); display: grid; place-items: center; transition: transform 700ms var(--ease); }
+  .btn-island:hover .trail { transform: translate(4px,-4px) scale(1.05); }
+  .btn-ghost { display: inline-flex; align-items: center; gap: .9rem; border-radius: 9999px; padding: .55rem .6rem .55rem 1.5rem; background: rgba(255,255,255,.06); color: #EDEDEF; font-weight: 500; font-size: 14px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); transition: transform 700ms var(--ease), background 700ms var(--ease); }
+  .btn-ghost:hover { background: rgba(255,255,255,.10); } .btn-ghost:active { transform: scale(.98); }
+  .btn-ghost .trail { width: 2rem; height: 2rem; border-radius: 9999px; background: rgba(255,255,255,.10); display: grid; place-items: center; transition: transform 700ms var(--ease); }
+  .btn-ghost:hover .trail { transform: translate(4px,-4px) scale(1.05); }
+  .pill-nav { position: fixed; top: 0; left: 50%; transform: translateX(-50%); margin-top: 1.5rem; z-index: 40; display: flex; align-items: center; gap: .25rem; padding: .4rem; border-radius: 9999px; background: rgba(0,0,0,.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); max-width: calc(100vw - 2rem); overflow-x: auto; }
+  .pill-nav button { display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; border-radius: 9999px; padding: .6rem 1rem; font-size: 13px; color: #A7A7B3; transition: all 700ms var(--ease); }
+  .pill-nav button:hover { color: #fff; background: rgba(255,255,255,.06); }
+  .pill-nav button.active { color: #0A0A0B; background: #EDEDEF; }
+  .reveal { opacity: 0; transform: translateY(4rem); filter: blur(12px); transition: opacity 800ms var(--ease), transform 800ms var(--ease), filter 800ms var(--ease); will-change: transform; }
+  .reveal.in { opacity: 1; transform: translateY(0); filter: blur(0); }
+  .overlay { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.8); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .overlay a { display: block; opacity: 0; transform: translateY(3rem); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+  .overlay.open a { opacity: 1; transform: translateY(0); }
+  .hamburger span { display: block; width: 20px; height: 1.5px; background: currentColor; transition: transform 700ms var(--ease), opacity 700ms var(--ease); }
+  .hamburger.open span:nth-child(1) { transform: translateY(4.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { transform: translateY(-4.5px) rotate(-45deg); }
+  .bar { border-radius: 9999px; transition: transform 700ms var(--ease), opacity 700ms var(--ease); }
+  .task-check { width: 22px; height: 22px; border-radius: 9999px; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); transition: transform 700ms var(--ease), background 700ms var(--ease); flex-shrink: 0; }
+  .task-check:hover { transform: scale(1.08); background: rgba(255,255,255,.08); }
+  .moved { box-shadow: inset 0 0 0 1px rgba(52,211,153,.4); }
+  ::selection { background: rgba(124,92,255,.4); }
+  @media (max-width: 768px) {
+    .bento { grid-template-columns: 1fr !important; }
+    .bento > * { grid-column: span 1 !important; }
+    .pad-mobile { padding-left: 1rem !important; padding-right: 1rem !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  }
+</style>
+</head>
+<body class="font-jakarta">
+<div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div>
+<div class="grain"></div>
+
+<!-- Fluid Island Nav -->
+<nav class="pill-nav" aria-label="Preview navigation">
+  <button data-view="dashboard" class="active">Dashboard</button>
+  <button data-view="timetable">Timetable</button>
+  <button data-view="assignments">Assignments</button>
+  <button data-view="planner">Planner</button>
+  <button data-view="catchup">Catch Up</button>
+  <button data-view="progress">Progress</button>
+  <button data-view="settings">Settings</button>
+  <button id="menuBtn" class="hamburger" aria-label="Open menu" style="flex-direction:column;gap:6px;padding:.7rem 1rem;">
+    <span></span><span></span>
+  </button>
+</nav>
+
+<!-- Fullscreen staggered overlay -->
+<div id="overlay" class="overlay">
+  <div class="min-h-[100dvh] w-full px-4 py-8 flex flex-col items-center justify-center gap-2 text-center">
+    <p class="eyebrow">ClassOS · Vanguard preview</p>
+    <a href="#" data-view="dashboard" style="transition-delay:100ms" class="font-display text-5xl">Dashboard</a>
+    <a href="#" data-view="timetable" style="transition-delay:150ms" class="font-display text-5xl opacity-70">Timetable</a>
+    <a href="#" data-view="assignments" style="transition-delay:200ms" class="font-display text-5xl opacity-70">Assignments</a>
+    <a href="#" data-view="planner" style="transition-delay:250ms" class="font-display text-5xl opacity-70">Planner</a>
+    <a href="#" data-view="catchup" style="transition-delay:300ms" class="font-display text-5xl opacity-70">Catch Up</a>
+    <a href="#" data-view="progress" style="transition-delay:350ms" class="font-display text-5xl opacity-70">Progress</a>
+    <a href="#" data-view="settings" style="transition-delay:400ms" class="font-display text-5xl opacity-70">Settings</a>
+    <p class="mt-6 text-xs tracking-widest uppercase opacity-50">Isolated test clone — not pushed</p>
+  </div>
+</div>
+
+<main class="relative z-10 mx-auto w-full max-w-6xl px-6 pt-32 pb-24 pad-mobile">
+
+  <!-- HERO -->
+  <section class="reveal py-24">
+    <p class="eyebrow">Friday · 5 Sept · Demo workspace</p>
+    <h1 class="font-display mt-6" style="font-size:clamp(2.8rem,6vw,5rem);line-height:.95;">Today,<br/>at your pace.</h1>
+    <p class="mt-6 max-w-xl text-[15px] leading-relaxed text-white/60">Welcome back, Alex. ClassOS adapts your school schedule when real life interrupts it — missing a day should not mean losing the week.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <button class="btn-island group" onclick="show('assignments')">New assignment <span class="trail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M7 17L17 7M9 7h8v8"/></svg></span></button>
+      <button class="btn-ghost group" onclick="show('catchup')">I missed school <span class="trail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 5v14M5 12h14"/></svg></span></button>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="view">
+    <div class="bento grid grid-cols-12 gap-6">
+      <div class="shell col-span-8 reveal"><div class="core p-8 md:p-10">
+        <p class="eyebrow">Focus now · Critical</p>
+        <p class="mt-5 text-xs uppercase tracking-[0.2em] text-white/40">Mathematics · 35 min · Due today</p>
+        <h2 class="font-display mt-3 text-3xl md:text-4xl">Quadratic equations practice</h2>
+        <p class="mt-3 text-sm text-emerald-200/80">Overdue work gets the first available space. Test in 4 days — preparation 35%.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button class="btn-island group">Start <span class="trail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+          <button class="btn-ghost group" onclick="show('planner')">Open planner <span class="trail">↗</span></button>
+        </div>
+      </div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:120ms"><div class="core p-8">
+        <p class="eyebrow">Recovery · 67%</p>
+        <h3 class="font-display mt-4 text-2xl">A missed day.<br/>A fresh start.</h3>
+        <p class="mt-2 text-sm text-white/55">1 of 3 catch-up tasks left · 25 min remaining.</p>
+        <div class="mt-5 h-1.5 rounded-full bg-white/10 overflow-hidden"><div class="bar h-full w-2/3 bg-emerald-300"></div></div>
+        <button class="btn-ghost group mt-6" onclick="show('catchup')">Continue <span class="trail">↗</span></button>
+      </div></div>
+      <div class="shell col-span-4 reveal"><div class="core p-7">
+        <p class="eyebrow">Today · 105 min</p>
+        <div class="mt-4 space-y-4 text-sm">
+          <div class="flex gap-3 items-start"><span class="text-white/35 text-xs mt-1 w-10">16:00</span><div><p class="font-medium">Quadratic equations</p><p class="text-white/45 text-xs">35 min · Locked</p></div></div>
+          <div class="flex gap-3 items-start"><span class="text-white/35 text-xs mt-1 w-10">16:45</span><div><p class="font-medium">Gatsby essay outline</p><p class="text-white/45 text-xs">45 min · Planned</p></div></div>
+          <div class="flex gap-3 items-start"><span class="text-white/35 text-xs mt-1 w-10">17:40</span><div><p class="font-medium">Market equilibrium</p><p class="text-white/45 text-xs">25 min · Planned</p></div></div>
+        </div>
+      </div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:120ms"><div class="core p-7">
+        <p class="eyebrow">Workload · 7 days</p>
+        <div class="mt-5 flex items-end gap-2 h-28">
+          <div class="bar flex-1 bg-white/15" style="height:30%"></div><div class="bar flex-1 bg-white/15" style="height:55%"></div>
+          <div class="bar flex-1 bg-emerald-300" style="height:90%"></div><div class="bar flex-1 bg-white/15" style="height:60%"></div>
+          <div class="bar flex-1 bg-white/15" style="height:75%"></div><div class="bar flex-1 bg-white/15" style="height:40%"></div>
+          <div class="bar flex-1 bg-white/10" style="height:25%"></div>
+        </div>
+        <p class="mt-3 text-xs text-white/45">Thursday is your busiest upcoming day.</p>
+      </div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:200ms"><div class="core p-7">
+        <p class="eyebrow">Next up</p>
+        <div class="mt-4 space-y-3 text-sm">
+          <div class="flex items-center gap-3"><span class="task-check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 6L9 17l-5-5"/></svg></span><div><p>Gatsby essay outline</p><p class="text-xs text-white/40">English · Due tomorrow</p></div></div>
+          <div class="flex items-center gap-3"><span class="task-check"></span><div><p>Market equilibrium notes</p><p class="text-xs text-white/40">Economics · Catch-Up · High</p></div></div>
+          <div class="flex items-center gap-3"><span class="task-check"></span><div><p>Algebra &amp; quadratics test</p><p class="text-xs text-white/40">Maths · In 4 days · 35% prepared</p></div></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- TIMETABLE -->
+  <section id="view-timetable" class="view hidden">
+    <p class="eyebrow reveal">Week · Mon — Sat</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">Rhythm of<br/>the week.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-8 reveal"><div class="core p-7">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">MON</p><p class="mt-1 font-medium">Mathematics 08:30</p><p class="text-xs text-white/40">B204 · Ms. Patel</p></div>
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">TUE</p><p class="mt-1 font-medium">Economics 09:30</p><p class="text-xs text-white/40">A102 · Mr. Bennett</p></div>
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">WED</p><p class="mt-1 font-medium">Science 10:40</p><p class="text-xs text-white/40">Lab 2 · Dr. Chen</p></div>
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">THU</p><p class="mt-1 font-medium">History 11:40</p><p class="text-xs text-white/40">C301 · Dr. Williams</p></div>
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">FRI</p><p class="mt-1 font-medium">English 13:20</p><p class="text-xs text-white/40">C104 · Mr. Lewis</p></div>
+          <div class="rounded-2xl bg-white/5 p-4" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)"><p class="text-xs text-white/40">SAT</p><p class="mt-1 font-medium">Open studio</p><p class="text-xs text-white/40">No fixed classes</p></div>
+        </div>
+      </div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:140ms"><div class="core p-7">
+        <p class="eyebrow">Now · Next</p>
+        <p class="mt-4 font-display text-xl">Science ends 11:30</p>
+        <p class="text-sm text-white/50">Next: History 11:40 · C301</p>
+        <p class="mt-4 text-xs text-white/40">Overlaps detected: none. Timezone Asia/Kolkata.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ASSIGNMENTS -->
+  <section id="view-assignments" class="view hidden">
+    <p class="eyebrow reveal">11 tasks · 4 due in 7 days</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">Work,<br/>ordered by what matters.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-7 reveal"><div class="core p-7 space-y-4 text-sm">
+        <div class="flex items-center gap-3"><span class="task-check"></span><div class="flex-1"><p>Quadratic equations practice</p><p class="text-xs text-white/40">Mathematics · Catch-Up · Critical</p></div><span class="text-xs text-orange-200/80">Due today</span></div>
+        <div class="flex items-center gap-3"><span class="task-check"></span><div class="flex-1"><p>Gatsby essay outline</p><p class="text-xs text-white/40">English · Assignment · High</p></div><span class="text-xs text-white/40">Tomorrow</span></div>
+        <div class="flex items-center gap-3"><span class="task-check"></span><div class="flex-1"><p>Market equilibrium notes</p><p class="text-xs text-white/40">Economics · Catch-Up · High</p></div><span class="text-xs text-white/40">In 2 days</span></div>
+        <div class="flex items-center gap-3 opacity-50"><span class="task-check"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 6L9 17l-5-5"/></svg></span><div class="flex-1"><p>Cell structure diagram</p><p class="text-xs text-white/40">Science · Completed</p></div><span class="text-xs">Done</span></div>
+      </div></div>
+      <div class="shell col-span-5 reveal" style="transition-delay:140ms"><div class="core p-7">
+        <p class="eyebrow">Tests · Separate</p>
+        <p class="mt-4 font-medium">Algebra &amp; quadratics — Mon</p>
+        <div class="mt-2 h-1.5 rounded-full bg-white/10"><div class="bar h-full w-1/3 bg-violet-300"></div></div>
+        <p class="mt-2 text-xs text-white/45">35% prepared · 120 min estimated</p>
+        <p class="mt-4 font-medium">Cells &amp; reactions — in 7 days</p>
+        <div class="mt-2 h-1.5 rounded-full bg-white/10"><div class="bar h-full w-1/5 bg-emerald-300"></div></div>
+        <p class="mt-2 text-xs text-white/45">20% prepared · 90 min estimated</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- PLANNER -->
+  <section id="view-planner" class="view hidden">
+    <p class="eyebrow reveal">14-day proposal · Up to date</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">An adapted plan<br/>you can trust.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-8 reveal"><div class="core p-7">
+        <p class="text-sm text-white/60">Wednesday · 60 min · within 120 min limit</p>
+        <div class="mt-4 space-y-3 text-sm">
+          <div class="moved rounded-2xl bg-white/5 p-4"><p><span class="text-white/40 text-xs">16:00 · 35 min</span> — Quadratic equations</p><p class="text-xs text-emerald-200/70">High-importance work benefits from an early start.</p></div>
+          <div class="rounded-2xl bg-white/5 p-4"><p><span class="text-white/40 text-xs">16:45 · 25 min</span> — Market equilibrium → moved from Tue</p><p class="text-xs text-white/45">Why: Maths is required before Thursday's lesson.</p></div>
+        </div>
+        <div class="mt-6 flex gap-3"><button class="btn-island group">Apply plan <span class="trail">✓</span></button><button class="btn-ghost group">Refresh <span class="trail">↻</span></button></div>
+      </div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:140ms"><div class="core p-7">
+        <p class="eyebrow">Capacity</p><p class="font-display mt-3 text-4xl">105<span class="text-base text-white/40"> / 120 min</span></p>
+        <p class="mt-2 text-xs text-white/45">Locked sessions preserved. Daily limit respected.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- CATCH UP -->
+  <section id="view-catchup" class="view hidden">
+    <p class="eyebrow reveal">Absence · 2 days ago · 3 classes</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">Missed a day.<br/>Kept the week.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-7 reveal"><div class="core p-7">
+        <p class="text-sm font-medium">Jamie's lesson notes — Deterministic text parser</p>
+        <p class="mt-2 text-xs text-white/45">Review quadratic equations 4.1–4.3 · Market equilibrium notes · Cell diagram</p>
+        <div class="mt-4 grid md:grid-cols-3 gap-3 text-xs">
+          <div class="rounded-2xl bg-white/5 p-4"><p class="text-orange-200">High · 1</p><p class="mt-1 text-white/60">Blocking tomorrow's lesson</p></div>
+          <div class="rounded-2xl bg-white/5 p-4"><p class="text-violet-200">Medium · 1</p><p class="mt-1 text-white/60">Important, not blocking</p></div>
+          <div class="rounded-2xl bg-white/5 p-4"><p class="text-emerald-200">Low · 1</p><p class="mt-1 text-white/60">Safe to defer</p></div>
+        </div>
+        <button class="btn-island group mt-6">Build my catch-up plan <span class="trail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
+      </div></div>
+      <div class="shell col-span-5 reveal" style="transition-delay:140ms"><div class="core p-7">
+        <p class="eyebrow">Projected recovery</p><p class="font-display mt-3 text-3xl">Tomorrow</p>
+        <p class="mt-2 text-sm text-white/55">25 min remaining · 1 study day at 120 min/day.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="view-progress" class="view hidden">
+    <p class="eyebrow reveal">Momentum · Real data</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">Small steps,<br/>compounding.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-4 reveal"><div class="core p-7"><p class="eyebrow">Completed</p><p class="font-display mt-3 text-5xl">4<span class="text-lg text-white/40"> / 11</span></p></div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:120ms"><div class="core p-7"><p class="eyebrow">Studied</p><p class="font-display mt-3 text-5xl">115<span class="text-lg text-white/40"> min</span></p></div></div>
+      <div class="shell col-span-4 reveal" style="transition-delay:200ms"><div class="core p-7"><p class="eyebrow">Recovered</p><p class="font-display mt-3 text-5xl">1<span class="text-lg text-white/40"> / 3</span></p></div></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" class="view hidden">
+    <p class="eyebrow reveal">Preferences · Local only</p>
+    <h2 class="font-display reveal mt-4 text-4xl md:text-5xl">A day that fits<br/>around life.</h2>
+    <div class="bento mt-10 grid grid-cols-12 gap-6">
+      <div class="shell col-span-7 reveal"><div class="core p-7 grid md:grid-cols-2 gap-4 text-sm">
+        <label>Full name<input value="Alex Morgan" class="mt-2 w-full rounded-full bg-white/5 px-5 py-3 outline-none" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)" /></label>
+        <label>Timezone<input value="Asia/Kolkata" class="mt-2 w-full rounded-full bg-white/5 px-5 py-3 outline-none" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)" /></label>
+        <label>Daily limit<input value="120" type="number" class="mt-2 w-full rounded-full bg-white/5 px-5 py-3 outline-none" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)" /></label>
+        <label>Starts at<input value="16:00" type="time" class="mt-2 w-full rounded-full bg-white/5 px-5 py-3 outline-none" style="box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)" /></label>
+      </div></div>
+      <div class="shell col-span-5 reveal" style="transition-delay:140ms"><div class="core p-7"><p class="eyebrow">Demo · Clearly labeled</p><p class="mt-3 text-sm text-white/55">Deterministic fixtures. No live AI faked. Reset restores the golden path.</p><button class="btn-ghost group mt-5">Reset demo <span class="trail">↻</span></button></div></div>
+    </div>
+  </section>
+
+  <footer class="reveal py-24 text-center">
+    <p class="eyebrow">Test clone · Not pushed</p>
+    <p class="font-display mt-4 text-2xl opacity-80">Fast. Fluid. Intelligent. Calm.</p>
+    <p class="mt-2 text-xs text-white/40">revamp-lab/ · isolated preview · Ethereal Glass + Asymmetrical Bento</p>
+  </footer>
+</main>
+
+<script>
+  const views = ['dashboard','timetable','assignments','planner','catchup','progress','settings'];
+  function show(name) {
+    views.forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== name));
+    document.querySelectorAll('.pill-nav button[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+    closeMenu();
+    requestAnimationFrame(() => observeAll());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-view]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); show(el.dataset.view); }));
+  const menuBtn = document.getElementById('menuBtn'), overlay = document.getElementById('overlay');
+  function closeMenu(){ overlay.classList.remove('open'); menuBtn.classList.remove('open'); }
+  menuBtn.addEventListener('click', () => {
+    const open = overlay.classList.toggle('open');
+    menuBtn.classList.toggle('open', open);
+  });
+  overlay.addEventListener('click', e => { if (e.target === overlay || e.target.closest('main')) closeMenu(); });
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.12 });
+  function observeAll(){ document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el)); }
+  observeAll();
+</script>
+</body>
+</html>

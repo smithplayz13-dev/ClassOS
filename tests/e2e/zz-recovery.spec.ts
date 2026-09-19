@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { addDays, dateInTimezone } from "../../src/lib/domain/dates";
+import { enterDemo } from "./legal-helpers";
+
+test.beforeEach(async ({ page }) => {
+  await enterDemo(page);
+});
 
 test("reviews extracted work before creating tasks, caches notes, and applies a plan", async ({
   page,
@@ -152,7 +157,7 @@ test("provides an install manifest, reduced-motion navigation, and an offline fa
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/dashboard");
   await page
     .getByRole("button", { name: "Open navigation", exact: true })
     .click();

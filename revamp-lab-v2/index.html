@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClassOS — Editorial Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { serif: ['Fraunces','Georgia','serif'], jakarta: ['"Plus Jakarta Sans"','sans-serif'] },
+  colors: { cream: '#FDFBF7', espresso: '#1C1611', sage: '#7D8A7A' }
+}}};
+</script>
+<style>
+  :root { color-scheme: light; --ease: cubic-bezier(0.32,0.72,0,1); }
+  * { -webkit-tap-highlight-color: transparent; }
+  html, body { background: #FDFBF7; }
+  body { font-family: "Plus Jakarta Sans", sans-serif; color: #1C1611; min-height: 100dvh; overflow-x: hidden; }
+  .font-serif-d { font-family: Fraunces, Georgia, serif; letter-spacing: -0.02em; }
+  .grain { position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: .03; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .wash { position: fixed; pointer-events: none; z-index: 0; border-radius: 9999px; filter: blur(100px); }
+  .shell { background: rgba(28,22,17,.05); border-radius: 2rem; padding: .5rem; box-shadow: inset 0 0 0 1px rgba(28,22,17,.08); transition: transform 700ms var(--ease); }
+  .shell:hover { transform: translateY(-2px); }
+  .core { background: #FFFFFF; border-radius: calc(2rem - 0.5rem); box-shadow: inset 0 1px 1px rgba(255,255,255,.9), inset 0 -1px 0 rgba(28,22,17,.06), 0 24px 60px -30px rgba(28,22,17,.25); }
+  .core-dark { background: #1C1611; color: #FDFBF7; border-radius: calc(2rem - 0.5rem); box-shadow: inset 0 1px 1px rgba(255,255,255,.15); }
+  .eyebrow { display: inline-flex; align-items: center; gap: .5rem; border-radius: 9999px; padding: .35rem .85rem; font-size: 10px; text-transform: uppercase; letter-spacing: .2em; font-weight: 500; background: rgba(28,22,17,.06); box-shadow: inset 0 0 0 1px rgba(28,22,17,.08); color: #6B6259; }
+  .btn-island { display: inline-flex; align-items: center; gap: .9rem; border-radius: 9999px; padding: .55rem .6rem .55rem 1.5rem; background: #1C1611; color: #FDFBF7; font-weight: 600; font-size: 14px; transition: transform 700ms var(--ease), background 700ms var(--ease); }
+  .btn-island:hover { background: #2E2620; } .btn-island:active { transform: scale(.98); }
+  .btn-island .trail { width: 2rem; height: 2rem; border-radius: 9999px; background: rgba(253,251,247,.15); display: grid; place-items: center; transition: transform 700ms var(--ease); }
+  .btn-island:hover .trail { transform: translate(4px,-4px) scale(1.05); }
+  .btn-ghost { display: inline-flex; align-items: center; gap: .9rem; border-radius: 9999px; padding: .55rem .6rem .55rem 1.5rem; background: rgba(28,22,17,.05); color: #1C1611; font-weight: 500; font-size: 14px; box-shadow: inset 0 0 0 1px rgba(28,22,17,.1); transition: transform 700ms var(--ease), background 700ms var(--ease); }
+  .btn-ghost:hover { background: rgba(28,22,17,.09); } .btn-ghost:active { transform: scale(.98); }
+  .btn-ghost .trail { width: 2rem; height: 2rem; border-radius: 9999px; background: rgba(28,22,17,.08); display: grid; place-items: center; transition: transform 700ms var(--ease); }
+  .btn-ghost:hover .trail { transform: translate(4px,-4px) scale(1.05); }
+  .pill-nav { position: fixed; top: 0; left: 50%; transform: translateX(-50%); margin-top: 1.5rem; z-index: 40; display: flex; align-items: center; gap: .25rem; padding: .4rem; border-radius: 9999px; background: rgba(253,251,247,.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: inset 0 0 0 1px rgba(28,22,17,.1), 0 20px 50px -20px rgba(28,22,17,.3); max-width: calc(100vw - 2rem); overflow-x: auto; }
+  .pill-nav button { display: inline-flex; align-items: center; white-space: nowrap; border-radius: 9999px; padding: .6rem 1rem; font-size: 13px; color: #6B6259; transition: all 700ms var(--ease); }
+  .pill-nav button:hover { color: #1C1611; background: rgba(28,22,17,.06); }
+  .pill-nav button.active { color: #FDFBF7; background: #1C1611; }
+  .reveal { opacity: 0; transform: translateY(4rem); filter: blur(12px); transition: opacity 800ms var(--ease), transform 800ms var(--ease), filter 800ms var(--ease); will-change: transform; }
+  .reveal.in { opacity: 1; transform: translateY(0); filter: blur(0); }
+  .overlay { position: fixed; inset: 0; z-index: 60; background: rgba(253,251,247,.85); backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); opacity: 0; pointer-events: none; transition: opacity 700ms var(--ease); }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+  .overlay a { display: block; opacity: 0; transform: translateY(3rem); transition: opacity 700ms var(--ease), transform 700ms var(--ease); color: #1C1611; }
+  .overlay.open a { opacity: 1; transform: translateY(0); }
+  .hamburger span { display: block; width: 20px; height: 1.5px; background: currentColor; transition: transform 700ms var(--ease); }
+  .hamburger.open span:nth-child(1) { transform: translateY(4.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { transform: translateY(-4.5px) rotate(-45deg); }
+  .scroll-pills { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; }
+  .scroll-pills > * { scroll-snap-align: start; flex-shrink: 0; }
+  .check { width: 22px; height: 22px; border-radius: 9999px; display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(28,22,17,.25); transition: transform 700ms var(--ease), background 700ms var(--ease); flex-shrink: 0; }
+  .check:hover { transform: scale(1.08); background: rgba(28,22,17,.06); }
+  .subtabs { display: inline-flex; gap: .25rem; padding: .3rem; border-radius: 9999px; background: rgba(28,22,17,.05); box-shadow: inset 0 0 0 1px rgba(28,22,17,.08); overflow-x: auto; max-width: 100%; }
+  .subtabs button { white-space: nowrap; border-radius: 9999px; padding: .5rem 1rem; font-size: 12px; font-weight: 500; color: #6B6259; transition: transform 700ms var(--ease), background 700ms var(--ease), color 700ms var(--ease), opacity 700ms var(--ease); }
+  .subtabs button:hover { color: #1C1611; background: rgba(28,22,17,.06); }
+  .subtabs button.active { color: #FDFBF7; background: #1C1611; }
+  .subtabs button:active { transform: scale(.97); }
+  .tabpanel { opacity: 0; transform: translateY(1rem); filter: blur(6px); pointer-events: none; position: absolute; inset: 0; transition: opacity 700ms var(--ease), transform 700ms var(--ease), filter 700ms var(--ease); }
+  .tabpanel.active { opacity: 1; transform: translateY(0); filter: blur(0); pointer-events: auto; position: relative; }
+  .tabstage { position: relative; }
+  ::selection { background: rgba(125,138,122,.35); }
+  @media (max-width: 768px) {
+    .split { flex-direction: column !important; }
+    .split > * { width: 100% !important; }
+    .pad-mobile { padding-left: 1rem !important; padding-right: 1rem !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wash" style="width:600px;height:600px;left:-200px;top:-200px;background:radial-gradient(circle,rgba(125,138,122,.25),transparent 65%)"></div>
+<div class="wash" style="width:500px;height:500px;right:-160px;top:20%;background:radial-gradient(circle,rgba(180,160,120,.22),transparent 65%)"></div>
+<div class="grain"></div>
+
+<nav class="pill-nav" aria-label="Preview navigation">
+  <button data-view="dashboard" class="active">Dashboard</button>
+  <button data-view="timetable">Timetable</button>
+  <button data-view="assignments">Assignments</button>
+  <button data-view="planner">Planner</button>
+  <button data-view="catchup">Catch Up</button>
+  <button data-view="progress">Progress</button>
+  <button data-view="settings">Settings</button>
+  <button id="menuBtn" class="hamburger" aria-label="Open menu" style="flex-direction:column;gap:6px;padding:.7rem 1rem;"><span></span><span></span></button>
+</nav>
+
+<div id="overlay" class="overlay">
+  <div class="min-h-[100dvh] w-full px-4 py-8 flex flex-col items-center justify-center gap-2 text-center">
+    <p class="eyebrow">ClassOS · Editorial preview</p>
+    <a href="#" data-view="dashboard" style="transition-delay:100ms" class="font-serif-d" data-size="56">Dashboard</a>
+    <a href="#" data-view="timetable" style="transition-delay:150ms;opacity:.6" class="font-serif-d" data-size="56">Timetable</a>
+    <a href="#" data-view="assignments" style="transition-delay:200ms;opacity:.6" class="font-serif-d" data-size="56">Assignments</a>
+    <a href="#" data-view="planner" style="transition-delay:250ms;opacity:.6" class="font-serif-d" data-size="56">Planner</a>
+    <a href="#" data-view="catchup" style="transition-delay:300ms;opacity:.6" class="font-serif-d" data-size="56">Catch Up</a>
+    <a href="#" data-view="progress" style="transition-delay:350ms;opacity:.6" class="font-serif-d" data-size="56">Progress</a>
+    <a href="#" data-view="settings" style="transition-delay:400ms;opacity:.6" class="font-serif-d" data-size="56">Settings</a>
+    <p class="mt-6 text-[10px] tracking-[0.2em] uppercase opacity-50">Isolated test clone — not pushed</p>
+  </div>
+</div>
+
+<main class="relative z-10 mx-auto w-full max-w-6xl px-6 pt-32 pb-24 pad-mobile">
+
+  <section class="reveal py-24 split flex gap-10 items-end">
+    <div class="w-1/2">
+      <p class="eyebrow">Friday · 5 Sept · Demo workspace</p>
+      <h1 class="font-serif-d mt-6" style="font-size:clamp(3rem,6.5vw,5.5rem);line-height:.95;">Learn<br/><em class="font-light">gently,</em> recover<br/>quickly.</h1>
+    </div>
+    <div class="w-1/2">
+      <p class="max-w-md text-[15px] leading-relaxed text-[#1C1611]/60">Welcome back, Alex. Your school schedule adapts when real life interrupts it — a missed day should never cost you the week.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button class="btn-island group" onclick="show('assignments')">New assignment <span class="trail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M7 17L17 7M9 7h8v8"/></svg></span></button>
+        <button class="btn-ghost group" onclick="show('catchup')">I missed school <span class="trail">+</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-dashboard" class="view">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="dash"><button class="active" data-tab="overview">Overview</button><button data-tab="today">Today</button><button data-tab="upcoming">Upcoming</button></div></div>
+    <div class="tabstage mt-6" data-panels="dash">
+      <div class="tabpanel active" data-panel="overview"><div class="split flex gap-6 items-start">
+        <div class="w-1/2 shell"><div class="core-dark p-8 md:p-10">
+          <p class="eyebrow" style="background:rgba(253,251,247,.1);box-shadow:inset 0 0 0 1px rgba(253,251,247,.15);color:#E8DCC8;">Focus now · Critical</p>
+          <p class="mt-5 text-[10px] uppercase tracking-[0.2em] text-white/40">Mathematics · 35 min · Due today</p>
+          <h2 class="font-serif-d mt-3" style="font-size:2.2rem;line-height:1.05;">Quadratic equations practice</h2>
+          <p class="mt-3 text-sm text-white/60">Overdue work gets the first available space. Test in 4 days — 35% prepared.</p>
+          <div class="mt-6 flex flex-wrap gap-3"><button class="btn-island group" style="background:#FDFBF7;color:#1C1611;">Start <span class="trail" style="background:rgba(28,22,17,.08);">→</span></button></div>
+        </div></div>
+        <div class="w-1/2 shell"><div class="core p-7">
+          <p class="eyebrow">Recovery · 67%</p>
+          <h3 class="font-serif-d mt-3 text-2xl">A missed day, a fresh start.</h3>
+          <div class="mt-4 h-1.5 rounded-full bg-[#1C1611]/10 overflow-hidden"><div class="h-full w-2/3 rounded-full bg-[#1C1611]"></div></div>
+          <button class="btn-ghost group mt-5" onclick="show('catchup')">Continue <span class="trail">↗</span></button>
+        </div></div>
+      </div></div>
+      <div class="tabpanel" data-panel="today"><div class="shell"><div class="core p-7">
+        <p class="eyebrow">Today · 105 min</p>
+        <div class="mt-4 scroll-pills text-sm">
+          <div class="rounded-2xl bg-[#1C1611]/[.04] p-4 min-w-[200px]" style="box-shadow:inset 0 0 0 1px rgba(28,22,17,.08)"><p class="text-[10px] tracking-[0.2em] text-black/40">16:00</p><p class="mt-1 font-medium">Quadratics · Locked</p></div>
+          <div class="rounded-2xl bg-[#1C1611]/[.04] p-4 min-w-[200px]" style="box-shadow:inset 0 0 0 1px rgba(28,22,17,.08)"><p class="text-[10px] tracking-[0.2em] text-black/40">16:45</p><p class="mt-1 font-medium">Gatsby essay · 45 min</p></div>
+          <div class="rounded-2xl bg-[#1C1611]/[.04] p-4 min-w-[200px]" style="box-shadow:inset 0 0 0 1px rgba(28,22,17,.08)"><p class="text-[10px] tracking-[0.2em] text-black/40">17:40</p><p class="mt-1 font-medium">Equilibrium · 25 min</p></div>
+        </div>
+      </div></div></div>
+      <div class="tabpanel" data-panel="upcoming"><div class="shell"><div class="core p-7 text-sm space-y-3">
+        <div class="flex items-center gap-3"><span class="check"></span><p>Gatsby essay — tomorrow</p></div>
+        <div class="flex items-center gap-3"><span class="check"></span><p>Algebra test — in 4 days · 35%</p></div>
+        <div class="flex items-center gap-3"><span class="check"></span><p>Cells test — in 7 days · 20%</p></div>
+      </div></div></div>
+    </div>
+  </section>
+
+  <section id="view-timetable" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="tt"><button class="active" data-tab="week">Week</button><button data-tab="day">Day</button><button data-tab="agenda">Agenda</button></div></div>
+    <div class="tabstage mt-6" data-panels="tt">
+      <div class="tabpanel active" data-panel="week"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">Week · Mon — Sat</p><h2 class="font-serif-d mt-4" style="font-size:3.2rem;line-height:1;">Rhythm of the week.</h2></div>
+      <div class="w-1/2 shell"><div class="core p-6 grid grid-cols-2 gap-3 text-sm">
+        <div class="rounded-2xl p-4 bg-[#1C1611]/[.04]">MON<p class="font-medium">Maths 08:30</p></div>
+        <div class="rounded-2xl p-4 bg-[#1C1611]/[.04]">TUE<p class="font-medium">Economics 09:30</p></div>
+        <div class="rounded-2xl p-4 bg-[#1C1611]/[.04]">WED<p class="font-medium">Science 10:40</p></div>
+        <div class="rounded-2xl p-4 bg-[#1C1611]/[.04]">THU<p class="font-medium">History 11:40</p></div>
+      </div></div></div></div>
+      <div class="tabpanel" data-panel="day"><div class="shell"><div class="core p-7 text-sm"><p class="eyebrow">Today · Friday</p><p class="mt-3 font-medium">Science 10:40–11:30 · Lab 2</p><p class="text-black/50">Current: ends 11:30 · Next: History 11:40</p></div></div></div>
+      <div class="tabpanel" data-panel="agenda"><div class="shell"><div class="core p-7 text-sm space-y-2"><p>08:30 Maths · B204</p><p>09:30 Economics · A102</p><p>10:40 Science · Lab 2</p><p class="text-black/50">No overlaps · Asia/Kolkata</p></div></div></div>
+    </div>
+  </section>
+
+  <section id="view-assignments" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="as"><button class="active" data-tab="upcoming">Upcoming</button><button data-tab="all">All</button><button data-tab="tests">Tests</button></div></div>
+    <div class="tabstage mt-6" data-panels="as">
+      <div class="tabpanel active" data-panel="upcoming"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">11 tasks · 4 due soon</p><h2 class="font-serif-d mt-4" style="font-size:3.2rem;line-height:1;">Work, in order of meaning.</h2></div>
+      <div class="w-1/2 shell"><div class="core p-6 space-y-4 text-sm">
+        <div class="flex items-center gap-3"><span class="check"></span><div class="flex-1"><p>Quadratic equations</p><p class="text-xs text-black/45">Maths · Critical · Due today</p></div></div>
+        <div class="flex items-center gap-3"><span class="check"></span><div class="flex-1"><p>Gatsby essay outline</p><p class="text-xs text-black/45">English · High · Tomorrow</p></div></div>
+      </div></div></div></div>
+      <div class="tabpanel" data-panel="all"><div class="shell"><div class="core p-6 text-sm space-y-3"><p>11 tasks · filters: subject / type / status / priority / overdue</p><p class="text-black/50">Completion feeds Dashboard + Planner. Tests stay separate.</p></div></div></div>
+      <div class="tabpanel" data-panel="tests"><div class="shell"><div class="core p-6 text-sm"><p>Algebra &amp; quadratics — Mon · 35%</p><p>Cells &amp; reactions — 7 days · 20%</p></div></div></div>
+    </div>
+  </section>
+
+  <section id="view-planner" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="pl"><button class="active" data-tab="day">Day</button><button data-tab="proposal">Proposal</button><button data-tab="capacity">Capacity</button></div></div>
+    <div class="tabstage mt-6" data-panels="pl">
+      <div class="tabpanel active" data-panel="day"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">Today · 105 min</p><h2 class="font-serif-d mt-4" style="font-size:3rem;line-height:1;">What to work on today.</h2></div>
+      <div class="w-1/2 shell"><div class="core p-6 text-sm"><p>1. Quadratics 35 min · 2. Gatsby 45 min · 3. Equilibrium 25 min</p><p class="text-black/50">Total 105 / 120 min · locked sessions respected.</p></div></div></div></div>
+      <div class="tabpanel" data-panel="proposal"><div class="shell"><div class="core p-6 text-sm"><p>16:00 · 35 min — Quadratics (High-importance first)</p><p class="mt-3">16:45 · 25 min — Equilibrium Wed → Thu</p><p class="text-black/50">Why: Maths required before Thursday.</p><div class="mt-4 flex gap-3"><button class="btn-island group">Apply <span class="trail">✓</span></button><button class="btn-ghost group">Refresh <span class="trail">↻</span></button></div></div></div></div>
+      <div class="tabpanel" data-panel="capacity"><div class="shell"><div class="core p-6 text-sm"><p>105 / 120 min used · 15 min breathing room</p><p class="text-black/50">Impossible workloads report honestly — best 90-min plan shown.</p></div></div></div>
+    </div>
+  </section>
+
+  <section id="view-catchup" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="cu"><button class="active" data-tab="impact">Impact</button><button data-tab="review">Review</button><button data-tab="plan">Plan</button></div></div>
+    <div class="tabstage mt-6" data-panels="cu">
+      <div class="tabpanel active" data-panel="impact"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">Absence · 2 days ago</p><h2 class="font-serif-d mt-4" style="font-size:3.2rem;line-height:1;">Missed a day, kept the week.</h2></div>
+      <div class="w-1/2 shell"><div class="core p-6 text-sm"><p>High · 1 — blocking tomorrow</p><p>Medium · 1 — important</p><p>Low · 1 — deferrable</p></div></div></div></div>
+      <div class="tabpanel" data-panel="review"><div class="shell"><div class="core p-6 text-sm"><p>Jamie's notes → 3 candidates · accept / edit / reject · nothing enters planner until confirmed.</p></div></div></div>
+      <div class="tabpanel" data-panel="plan"><div class="shell"><div class="core p-6 text-sm"><p>Recovery tomorrow · 25 min left · 1 study day.</p><button class="btn-island group mt-4">Build catch-up plan <span class="trail">→</span></button></div></div></div>
+    </div>
+  </section>
+
+  <section id="view-progress" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="pr"><button class="active" data-tab="overview">Overview</button><button data-tab="subjects">Subjects</button><button data-tab="workload">Workload</button></div></div>
+    <div class="tabstage mt-6" data-panels="pr">
+      <div class="tabpanel active" data-panel="overview"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">Momentum</p><h2 class="font-serif-d mt-4" style="font-size:3.2rem;line-height:1;">Small steps, compounding.</h2></div>
+      <div class="w-1/2 flex gap-4"><div class="shell flex-1"><div class="core p-6 text-center"><p class="font-serif-d text-4xl">4/11</p><p class="text-xs">Completed</p></div></div><div class="shell flex-1"><div class="core p-6 text-center"><p class="font-serif-d text-4xl">115</p><p class="text-xs">Minutes</p></div></div><div class="shell flex-1"><div class="core p-6 text-center"><p class="font-serif-d text-4xl">1/3</p><p class="text-xs">Recovered</p></div></div></div></div></div>
+      <div class="tabpanel" data-panel="subjects"><div class="shell"><div class="core p-6 text-sm"><p>Maths 2/3 · English 1/2 · Science 1/2 · Thursday busiest.</p></div></div></div>
+      <div class="tabpanel" data-panel="workload"><div class="shell"><div class="core p-6 text-sm"><p>7-day workload · only real data, no filler.</p></div></div></div>
+    </div>
+  </section>
+
+  <section id="view-settings" class="view hidden">
+    <div class="flex flex-wrap items-center gap-3 reveal"><div class="subtabs" data-tabs="se"><button class="active" data-tab="prefs">Preferences</button><button data-tab="demo">Demo</button><button data-tab="workspace">Workspace</button></div></div>
+    <div class="tabstage mt-6" data-panels="se">
+      <div class="tabpanel active" data-panel="prefs"><div class="split flex gap-10"><div class="w-1/2"><p class="eyebrow">Preferences</p><h2 class="font-serif-d mt-4" style="font-size:3.2rem;line-height:1;">A day around life.</h2></div>
+      <div class="w-1/2 shell"><div class="core p-6 grid gap-4 text-sm"><label>Name<input value="Alex Morgan" class="mt-2 w-full rounded-full bg-black/5 px-5 py-3 outline-none" /></label><label>Daily limit<input value="120" class="mt-2 w-full rounded-full bg-black/5 px-5 py-3 outline-none" /></label></div></div></div></div>
+      <div class="tabpanel" data-panel="demo"><div class="shell"><div class="core p-6 text-sm"><p>Deterministic fixtures · Reset restores golden path.</p><button class="btn-ghost group mt-4">Reset demo <span class="trail">↻</span></button></div></div></div>
+      <div class="tabpanel" data-panel="workspace"><div class="shell"><div class="core p-6 text-sm"><p>Local demo · Asia/Kolkata · Dark editorial · v2 preview.</p></div></div></div>
+    </div>
+  </section>
+
+  <footer class="reveal py-24 text-center">
+    <p class="eyebrow">Test clone v2 · Not pushed</p>
+    <p class="font-serif-d mt-4 text-2xl">Calm, editorial, trustworthy.</p>
+    <p class="mt-2 text-xs text-black/40">revamp-lab-v2/ · Editorial Luxury + Editorial Split</p>
+  </footer>
+</main>
+
+<script>
+  document.querySelectorAll('#overlay a').forEach(a => { a.style.fontSize = 'clamp(2rem,6vw,3.5rem)'; a.style.lineHeight = '1.1'; });
+  const views = ['dashboard','timetable','assignments','planner','catchup','progress','settings'];
+  function show(name) {
+    views.forEach(v => document.getElementById('view-'+v).classList.toggle('hidden', v !== name));
+    document.querySelectorAll('.pill-nav button[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+    closeMenu(); requestAnimationFrame(observeAll); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-view]').forEach(el => el.addEventListener('click', e => { e.preventDefault(); show(el.dataset.view); }));
+  const menuBtn = document.getElementById('menuBtn'), overlay = document.getElementById('overlay');
+  function closeMenu(){ overlay.classList.remove('open'); menuBtn.classList.remove('open'); }
+  menuBtn.addEventListener('click', () => { const o = overlay.classList.toggle('open'); menuBtn.classList.toggle('open', o); });
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }), { threshold: 0.12 });
+  function observeAll(){ document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el)); }
+  observeAll();
+  document.querySelectorAll('[data-tabs]').forEach(bar => {
+    const key = bar.dataset.tabs;
+    bar.querySelectorAll('button[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+      bar.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('[data-panels="'+key+'"] [data-panel]').forEach(p => p.classList.toggle('active', p.dataset.panel === btn.dataset.tab));
+    }));
+  });
+</script>
+</body>
+</html>

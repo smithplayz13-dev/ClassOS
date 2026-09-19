@@ -6,7 +6,7 @@ export default function NotFound() {
     <main className="error-page">
       <span className="eyebrow">404</span>
       <h1>This page isn&apos;t on the timetable.</h1>
-      <Link className="button primary" href="/">
+      <Link className="button primary" href="/dashboard">
         <ArrowLeft size={16} />
         Back to dashboard
       </Link>

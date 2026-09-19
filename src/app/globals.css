@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+[id] {
+  scroll-margin-top: 24px;
+}
 :root {
   color-scheme: dark;
   --background: #141517;
@@ -1928,6 +1934,9 @@ progress::-moz-progress-bar {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {

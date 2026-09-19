@@ -15,7 +15,7 @@ export const getProfile = cache(async () => {
       },
     },
   });
-  if (!student) redirect("/onboarding");
+  if (!student) redirect("/");
   return { student, today: dateInTimezone(new Date(), student.timezone) };
 });
 
@@ -51,7 +51,7 @@ export const getWorkspace = cache(async (withSourceText = false) => {
       },
     },
   });
-  if (!student) redirect("/onboarding");
+  if (!student) redirect("/");
   const today = dateInTimezone(new Date(), student.timezone);
   const activeTasks = student.tasks
     .filter((task) => task.status !== "completed")

@@ -3,12 +3,18 @@ import { expect, test } from "@playwright/test";
 test("personal setup persists real coursework independently of the demo", async ({
   page,
 }) => {
-  await page.goto("/onboarding");
+  await page.goto("/");
   await page.getByLabel("Your name").fill("Personal Student");
   await page.getByLabel("Subjects (one per line)").fill("Biology\nChemistry");
+  await page
+    .locator("form")
+    .filter({ has: page.getByRole("button", { name: "Create my workspace" }) })
+    .getByRole("checkbox")
+    .check();
   await page.getByRole("button", { name: "Create my workspace" }).click();
-  await expect(page).toHaveURL(/\/timetable$/);
+  await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.locator(".demo-tag")).toHaveCount(0);
+  await page.goto("/timetable");
   await expect(page.locator(".lesson")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Add class", exact: true }).click();
@@ -74,11 +80,18 @@ test("personal setup persists real coursework independently of the demo", async 
   await expect(
     page.getByText("Personal biology report", { exact: true }),
   ).toHaveCount(0);
-  await page.goto("/onboarding");
+  await page.goto("/");
+  await page
+    .locator("form")
+    .filter({
+      has: page.getByRole("button", { name: "Continue as Personal Student" }),
+    })
+    .getByRole("checkbox")
+    .check();
   await page
     .getByRole("button", { name: "Continue as Personal Student" })
     .click();
-  await expect(page).toHaveURL("http://127.0.0.1:3107/");
+  await expect(page).toHaveURL("http://127.0.0.1:3107/dashboard");
   await expect(page.locator(".demo-tag")).toHaveCount(0);
   await page.goto("/assignments");
   await expect(

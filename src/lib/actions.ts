@@ -110,7 +110,7 @@ export async function saveSettings(
       data: parsed.data,
     });
     await markScheduleChanged();
-    refreshWorkspace(["/", "/planner", "/settings"]);
+    refreshWorkspace(["/dashboard", "/planner", "/settings"]);
     return { success: true, message: "Preferences saved." };
   } catch (error) {
     return failure(error);

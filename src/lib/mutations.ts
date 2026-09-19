@@ -11,7 +11,7 @@ export async function markScheduleChanged() {
   });
 }
 export function refreshWorkspace(
-  paths = ["/", "/assignments", "/planner", "/catch-up", "/progress"],
+  paths = ["/dashboard", "/assignments", "/planner", "/catch-up", "/progress"],
 ) {
   for (const path of paths) revalidatePath(path);
 }

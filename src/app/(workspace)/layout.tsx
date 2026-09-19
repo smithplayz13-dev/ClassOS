@@ -6,6 +6,7 @@ import { CalendarDays } from "lucide-react";
 import { PwaStatus } from "@/components/pwa-status";
 import { DEMO_STUDENT_ID } from "@/lib/db/workspace";
 import Link from "next/link";
+import { LegalLinks } from "@/components/legal-consent";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +49,7 @@ export default async function WorkspaceLayout({
           {student.id === DEMO_STUDENT_ID && (
             <div className="workspace-setup-bar">
               <span>Demo workspace</span>
-              <Link href="/onboarding">
+              <Link href="/#setup">
                 Set up my workspace <span aria-hidden="true">&rarr;</span>
               </Link>
             </div>
@@ -62,6 +63,7 @@ export default async function WorkspaceLayout({
               ? "Local demo workspace"
               : "Personal workspace"}
           </span>
+          <LegalLinks />
           <span>One day at a time.</span>
         </footer>
       </div>
