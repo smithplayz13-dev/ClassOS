@@ -37,6 +37,7 @@ export function UploadNotes({ absenceId }: { absenceId: string }) {
         <button
           type="button"
           className={mode === "text" ? "selected" : ""}
+          aria-pressed={mode === "text"}
           onClick={() => setMode("text")}
         >
           Paste text
@@ -44,6 +45,7 @@ export function UploadNotes({ absenceId }: { absenceId: string }) {
         <button
           type="button"
           className={mode === "file" ? "selected" : ""}
+          aria-pressed={mode === "file"}
           onClick={() => setMode("file")}
         >
           Upload file

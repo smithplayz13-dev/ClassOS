@@ -8,6 +8,7 @@ import { SubjectLabel } from "@/components/ui";
 import { PageTitle, SectionTitle } from "@/components/ui";
 import { PreferencesForm } from "@/components/forms";
 import { ResetDemoButton } from "@/components/reset-demo";
+import { ThemeChoiceField } from "@/components/theme";
 
 export const metadata: Metadata = { title: "Settings" };
 
@@ -34,6 +35,14 @@ export default async function SettingsPage() {
               breakMinutes: student.breakMinutes,
             }}
           />
+          <div className="settings-appearance">
+            <h2 id="appearance-heading">Appearance</h2>
+            <p className="muted theme-hint">
+              Light, Dark, or System. Saved on this device and applied before
+              the page paints.
+            </p>
+            <ThemeChoiceField />
+          </div>
         </section>
         <aside className="workspace-details">
           <h2>Workspace</h2>
@@ -48,7 +57,7 @@ export default async function SettingsPage() {
             </div>
             <div>
               <dt>Appearance</dt>
-              <dd>Porcelain & cobalt</dd>
+              <dd>Light, Dark, or System</dd>
             </div>
           </dl>
           <p className="muted">Your schoolwork, with space to breathe.</p>

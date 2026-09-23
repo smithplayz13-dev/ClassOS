@@ -28,6 +28,14 @@ export async function recordAgreement(studentId: string) {
   await db.legalAcceptance.create({
     data: { studentId, version: LEGAL_VERSION, tokenHash: digest(token) },
   });
+  // Tokens never expire server-side on their own; prune this student's
+  // expired rows whenever a fresh agreement is recorded.
+  await db.legalAcceptance.deleteMany({
+    where: {
+      studentId,
+      acceptedAt: { lt: new Date(Date.now() - MAX_AGE * 1000) },
+    },
+  });
   (await cookies()).set(COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",

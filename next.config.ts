@@ -13,6 +13,28 @@ const config: NextConfig = {
     "tesseract.js",
   ],
   devIndicators: false,
+  // Baseline hardening that cannot break the app: no script-src CSP here
+  // because the theme needs its pre-paint inline script and Next.js emits
+  // its own inline runtime scripts.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default config;

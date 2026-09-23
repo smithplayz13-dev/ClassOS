@@ -11,6 +11,20 @@ import {
 } from "@/lib/ai/provider";
 
 export const runtime = "nodejs";
+// Every message thrown for the user inside this handler. Anything else
+// (provider timeouts, schema internals, worker errors) stays server-side.
+const USER_FACING_ERRORS = new Set([
+  "No upload received.",
+  "Files must be 5 MB or smaller.",
+  "Upload a valid PDF, PNG, JPEG, TXT, or Markdown file.",
+  "Add between 1 and 20,000 characters of lesson notes.",
+  "Notes are already processing. Please try again shortly.",
+  "Two files are already processing. Please try again shortly.",
+  "No readable text was found. For scanned PDFs, upload a page as an image or paste its text.",
+  "Reading this file took too long. Try fewer pages or paste the lesson text.",
+  "File processing stopped. Try a smaller file.",
+  "Please upload at most 20 pages at a time.",
+]);
 const inFlight = new Map<
   string,
   Promise<{ text: string; suggestions: ExtractedWork[] }>
@@ -75,7 +89,7 @@ export async function POST(request: Request) {
         throw new Error("Files must be 5 MB or smaller.");
       bytes = new Uint8Array(await file.arrayBuffer());
       kind = fileKind(bytes, file.name);
-      title = file.name.slice(0, 160);
+      title = file.name.trim().slice(0, 160) || "Lesson notes";
     } else if (!text || text.length > 20_000)
       throw new Error("Add between 1 and 20,000 characters of lesson notes.");
     const provider =
@@ -153,7 +167,8 @@ export async function POST(request: Request) {
         error:
           error instanceof Error &&
           !(error instanceof Prisma.PrismaClientKnownRequestError) &&
-          !(error instanceof Prisma.PrismaClientValidationError)
+          !(error instanceof Prisma.PrismaClientValidationError) &&
+          USER_FACING_ERRORS.has(error.message)
             ? error.message
             : "Could not process this upload.",
       },

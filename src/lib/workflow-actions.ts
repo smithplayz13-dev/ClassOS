@@ -95,13 +95,20 @@ export async function sessionAction(
         throw new Error(
           "Please wait until the session's date to log its completion.",
         );
-      await tx.studySession.update({
-        where: { id },
-        data:
-          operation === "lock" || operation === "unlock"
-            ? { locked: operation === "lock" }
-            : { status: operation === "complete" ? "completed" : "skipped" },
-      });
+      await tx.studySession
+        .updateMany({
+          where: { id, studentId: studentId, status: "planned" },
+          data:
+            operation === "lock" || operation === "unlock"
+              ? { locked: operation === "lock" }
+              : { status: operation === "complete" ? "completed" : "skipped" },
+        })
+        .then((result) => {
+          if (!result.count)
+            throw new Error(
+              "Please refresh; this session has already changed.",
+            );
+        });
       await tx.student.update({
         where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
@@ -173,10 +180,15 @@ export async function acceptMissedWork(
           sourceId,
         })),
       });
-      await tx.missedWorkSource.update({
-        where: { id: sourceId },
+      // Conditional claim: a concurrent review wins, this one reports stale.
+      const claimed = await tx.missedWorkSource.updateMany({
+        where: { id: sourceId, reviewedAt: null },
         data: { reviewedAt: new Date() },
       });
+      if (!claimed.count)
+        throw new Error(
+          "Please refresh; these notes have already been reviewed.",
+        );
       await tx.absence.update({
         where: { id: source.absenceId },
         data: { status: "recovering" },
@@ -246,9 +258,14 @@ export async function updateTask(
 export async function deleteTask(id: string): Promise<ActionState> {
   const studentId = await getStudentId();
   try {
-    await db.academicTask.deleteMany({
+    const result = await db.academicTask.deleteMany({
       where: { id, studentId: studentId },
     });
+    if (!result.count)
+      return {
+        success: false,
+        message: "This assignment was already removed.",
+      };
     await markScheduleChanged();
     refreshWorkspace();
     return { success: true, message: "Assignment deleted." };
@@ -303,8 +320,13 @@ export async function saveLesson(
         throw new Error(
           "Please choose another time; this overlaps an existing class.",
         );
-      if (id) await tx.timetableEntry.update({ where: { id }, data });
-      else await tx.timetableEntry.create({ data });
+      if (id) {
+        const saved = await tx.timetableEntry.updateMany({
+          where: { id, subject: { studentId: studentId } },
+          data,
+        });
+        if (!saved.count) throw new Error("Please refresh this lesson.");
+      } else await tx.timetableEntry.create({ data });
       await tx.student.update({
         where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
@@ -358,11 +380,22 @@ export async function saveTest(
     await db.$transaction(async (tx) => {
       if (id && !(await tx.test.count({ where: { id, studentId: studentId } })))
         throw new Error("Please refresh; this test was removed.");
-      const saved = id
-        ? await tx.test.update({ where: { id }, data: parsed.data })
-        : await tx.test.create({
+      const savedId =
+        id ??
+        (
+          await tx.test.create({
             data: { ...parsed.data, studentId: studentId },
-          });
+            select: { id: true },
+          })
+        ).id;
+      if (id) {
+        const saved = await tx.test.updateMany({
+          where: { id, studentId: studentId },
+          data: parsed.data,
+        });
+        if (!saved.count)
+          throw new Error("Please refresh; this test was removed.");
+      }
       const preparation = {
         studentId: studentId,
         subjectId: parsed.data.subjectId,
@@ -374,8 +407,8 @@ export async function saveTest(
         type: "reading" as const,
       };
       await tx.academicTask.upsert({
-        where: { testId: saved.id },
-        create: { ...preparation, testId: saved.id },
+        where: { testId: savedId },
+        create: { ...preparation, testId: savedId },
         update: preparation,
       });
       await tx.student.update({
@@ -463,10 +496,14 @@ export async function moveSession(
         throw new Error(
           "Please choose another day or increase your daily limit.",
         );
-      await tx.studySession.update({
-        where: { id },
-        data: { ...parsed.data, locked: true },
-      });
+      await tx.studySession
+        .updateMany({
+          where: { id, studentId: studentId, status: "planned" },
+          data: { ...parsed.data, locked: true },
+        })
+        .then((result) => {
+          if (!result.count) throw new Error("Please refresh this session.");
+        });
       await tx.student.update({
         where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },

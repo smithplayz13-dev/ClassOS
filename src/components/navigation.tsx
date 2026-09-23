@@ -20,6 +20,7 @@ import {
   ArrowUpRight,
   ChevronRight,
 } from "lucide-react";
+import { ThemeSwitch } from "./theme";
 
 const navigation = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -123,6 +124,12 @@ export function Navigation({
               </Link>
             ))}
           </nav>
+          <div className="sidebar-theme">
+            <span className="theme-label" id="drawer-theme-label">
+              Appearance
+            </span>
+            <ThemeSwitch idPrefix="drawer-theme" />
+          </div>
         </dialog>
         <Link
           href="/dashboard"
@@ -172,6 +179,12 @@ export function Navigation({
           ))}
         </nav>
         <div className="sidebar-bottom">
+          <div className="sidebar-theme">
+            <span className="theme-label" id="sidebar-theme-label">
+              Appearance
+            </span>
+            <ThemeSwitch idPrefix="sidebar-theme" />
+          </div>
           <Link href="/#setup" className="workspace-info">
             {isDemo ? "Set up my workspace" : "Switch workspace"}
           </Link>

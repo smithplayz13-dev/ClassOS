@@ -1243,3 +1243,144 @@
     backdrop-filter: none;
   }
 }
+
+/* Deliberate ink theme for the landing page. The local --landing-* tokens
+   are redefined so every section using them follows; filled brand actions
+   keep white text on a deeper cobalt while links use a lighter tint. */
+:global(html[data-theme="dark"]) .page {
+  --landing-white: #171b25;
+  --landing-parchment: #0e1014;
+  --landing-ink: #eef0f6;
+  --landing-muted: #a6adbe;
+  --landing-blue: #9db1ff;
+  --landing-sky: #bcc9ff;
+  --landing-hairline: #2a3244;
+  --landing-dark: #101319;
+  --accent: #9db1ff;
+  --accent-strong: #bcc9ff;
+  --text: #eef0f6;
+  --muted: #a6adbe;
+  --surface: #171b25;
+  --background: #0e1014;
+  --border: #2a3244;
+  background: #0e1014;
+  color: #eef0f6;
+  color-scheme: dark;
+}
+
+:global(html[data-theme="dark"])
+  .page
+  :is(a, button, input, textarea):focus-visible {
+  outline-color: #9db1ff;
+}
+
+:global(html[data-theme="dark"]) .header {
+  background: rgb(14 16 20 / 88%);
+  border-bottom-color: rgb(255 255 255 / 8%);
+}
+
+:global(html[data-theme="dark"]) .brandMark,
+:global(html[data-theme="dark"]) .setupMark {
+  background: #4f63de;
+  color: #fff;
+}
+
+:global(html[data-theme="dark"]) .primaryButton {
+  background: #4f63de;
+  color: #fff;
+}
+
+:global(html[data-theme="dark"]) .primaryButton:hover {
+  background: #5769e3;
+  color: #fff;
+}
+
+:global(html[data-theme="dark"]) .blueLink {
+  color: #9db1ff;
+}
+
+:global(html[data-theme="dark"]) .productFrame {
+  border-color: #333c52;
+  background: #10141d;
+  box-shadow: 3px 5px 30px rgb(0 0 0 / 55%);
+}
+
+:global(html[data-theme="dark"]) .explore {
+  background: #101319;
+  border-block: 1px solid #222a3b;
+}
+
+:global(html[data-theme="dark"]) .tabsList {
+  background: #1c2230;
+}
+
+:global(html[data-theme="dark"]) .tabsTrigger {
+  color: #c3c9d8;
+}
+
+:global(html[data-theme="dark"]) .tabsTrigger[data-state="active"] {
+  color: #14171d;
+  background: #e9ebf1;
+}
+
+:global(html[data-theme="dark"]) .tabsTrigger:hover:not([data-state="active"]) {
+  color: #fff;
+  background: #262e42;
+}
+
+:global(html[data-theme="dark"]) .tourScreen {
+  background: #1c2230;
+  border-color: #333c52;
+}
+
+:global(html[data-theme="dark"]) .flowIcon {
+  background: #1c2230;
+  color: #dfe4f2;
+}
+
+:global(html[data-theme="dark"]) .lifeImage {
+  filter: brightness(0.92) saturate(0.96);
+}
+
+:global(html[data-theme="dark"])
+  .setupPanel
+  :is(input:not([type="checkbox"]):not([type="hidden"]), textarea) {
+  border-color: #3a4358;
+  background: #12161d;
+  color: #eef0f6;
+}
+
+:global(html[data-theme="dark"]) .setupPanel :is(input, textarea)::placeholder {
+  color: #8b93a7;
+}
+
+:global(html[data-theme="dark"]) .setupPanel :global(.button.primary) {
+  background: #4f63de;
+  border-color: #4f63de;
+  color: #fff;
+}
+
+:global(html[data-theme="dark"]) .setupPanel :global(.button.primary):hover {
+  background: #5769e3;
+  border-color: #5769e3;
+}
+
+:global(html[data-theme="dark"]) .setupPanel :global(.legal-consent) {
+  background: #141926;
+  border-color: #2a3244;
+}
+
+:global(html[data-theme="dark"]) .setupPanel :global(.legal-consent) a,
+:global(html[data-theme="dark"]) .demoButton {
+  color: #9db1ff;
+}
+
+:global(html[data-theme="dark"]) .mobileMenu {
+  background: #14171e;
+  border-bottom-color: #2a3244;
+}
+
+:global(html[data-theme="dark"]) .heroProduct img,
+:global(html[data-theme="dark"]) .tourScreen img {
+  filter: brightness(0.97);
+}

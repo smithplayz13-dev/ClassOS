@@ -134,13 +134,17 @@ export async function setTaskCompleted(
     });
     if (!task)
       return { success: false, message: "This task could not be found." };
-    await db.academicTask.update({
-      where: { id: task.id },
+    // Scoped write: the row can only change while it still belongs to
+    // this workspace, closing the check-then-act window.
+    const updated = await db.academicTask.updateMany({
+      where: { id: task.id, studentId: studentId },
       data: {
         status: completed ? "completed" : "todo",
         completedAt: completed ? new Date() : null,
       },
     });
+    if (!updated.count)
+      return { success: false, message: "This task could not be found." };
     await db.studySession.deleteMany({
       where: {
         studentId: studentId,
@@ -150,17 +154,19 @@ export async function setTaskCompleted(
       },
     });
     if (task.sourceId) {
-      const source = await db.missedWorkSource.findUniqueOrThrow({
-        where: { id: task.sourceId },
+      const source = await db.missedWorkSource.findFirst({
+        where: { id: task.sourceId, absence: { studentId: studentId } },
       });
+      if (!source)
+        return { success: false, message: "This task could not be found." };
       const open = await db.academicTask.count({
         where: {
           source: { absenceId: source.absenceId },
           status: { not: "completed" },
         },
       });
-      await db.absence.update({
-        where: { id: source.absenceId },
+      await db.absence.updateMany({
+        where: { id: source.absenceId, studentId: studentId },
         data: { status: open ? "recovering" : "resolved" },
       });
     }

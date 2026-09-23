@@ -1,11 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#f7f7f5" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#f7f7f5"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0e1014"
+    />
     <title>ClassOS | Offline</title>
+    <script>
+      (function () {
+        try {
+          var s = localStorage.getItem("classos-theme") || "system";
+          var d = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var r = s === "dark" || (s === "system" && d) ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", r);
+          document.documentElement.style.colorScheme = r;
+        } catch (e) {}
+      })();
+    </script>
     <style>
+      :root {
+        color-scheme: light;
+      }
+      html[data-theme="dark"] {
+        color-scheme: dark;
+      }
       body {
         margin: 0;
         background: #f7f7f5;
@@ -17,6 +43,10 @@
         place-items: center;
         min-height: 100vh;
       }
+      html[data-theme="dark"] body {
+        background: #0e1014;
+        color: #e9ebf1;
+      }
       main {
         max-width: 430px;
         padding: 32px;
@@ -27,6 +57,9 @@
       p {
         color: #656976;
       }
+      html[data-theme="dark"] p {
+        color: #a6adbe;
+      }
       a {
         display: inline-block;
         background: #3456d8;
@@ -35,8 +68,28 @@
         border-radius: 6px;
         text-decoration: none;
       }
+      html[data-theme="dark"] a {
+        background: #5a72e8;
+        color: #ffffff;
+      }
+      a:focus-visible {
+        outline: 2px solid #3456d8;
+        outline-offset: 4px;
+      }
+      html[data-theme="dark"] a:focus-visible {
+        outline-color: #9db1ff;
+      }
       strong {
         color: #3456d8;
+      }
+      html[data-theme="dark"] strong {
+        color: #9db1ff;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
       }
     </style>
   </head>

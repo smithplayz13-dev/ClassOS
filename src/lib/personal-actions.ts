@@ -121,8 +121,13 @@ export async function saveSubject(
         )
       )
         throw new Error("A subject with this name already exists.");
-      if (id) await tx.subject.update({ where: { id }, data: parsed.data });
-      else await tx.subject.create({ data: { ...parsed.data, studentId } });
+      if (id) {
+        const saved = await tx.subject.updateMany({
+          where: { id, studentId },
+          data: parsed.data,
+        });
+        if (!saved.count) throw new Error("Subject not found.");
+      } else await tx.subject.create({ data: { ...parsed.data, studentId } });
       await tx.student.update({
         where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },
@@ -162,7 +167,11 @@ export async function deleteSubject(id: string): Promise<ActionState> {
           message:
             "Move or remove this subject's assignments, tests, and classes first.",
         };
-      await tx.subject.delete({ where: { id } });
+      const removed = await tx.subject.deleteMany({
+        where: { id, studentId },
+      });
+      if (!removed.count)
+        return { success: false, message: "Subject not found." };
       await tx.student.update({
         where: { id: studentId },
         data: { scheduleRevision: { increment: 1 } },

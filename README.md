@@ -2,7 +2,7 @@
 
 **Your school schedule adapts when real life interrupts it.**
 
-ClassOS is an adaptive school productivity MVP: a dark, responsive student workspace with relational persistence, missed-work extraction and human review, explainable multi-day planning, and an installable PWA shell. It runs locally without an AI key.
+ClassOS is an adaptive school productivity MVP: a responsive student workspace with Light, Dark, and System appearance options, relational persistence, missed-work extraction and human review, explainable multi-day planning, and an installable PWA shell. It runs locally without an AI key.
 
 ## Run locally
 
@@ -44,10 +44,18 @@ The seed creates one student, six subjects, 25 recurring lessons, 11 tasks, two 
 - Planner: review and apply an explained 14-day proposal; move, lock, unlock, skip, or log study sessions.
 - Catch Up: record absences, paste notes or upload PDF/PNG/JPEG/TXT/Markdown files, edit extracted suggestions, accept selected tasks, and track recovery.
 - Progress: completed tasks, recorded study time, and subject-level completion.
-- Settings: validated name, timezone, study start time, daily limit, study-block length, and breaks.
+- Settings: validated name, timezone, study start time, daily limit, study-block length, and breaks. Appearance offers Light, Dark, and System; see Appearance below.
 - PWA: install manifest, app icons, install prompt where supported, connection status, and a privacy-preserving offline fallback.
 
 Workload changes automatically produce a revised proposal. Applying it is an explicit review step: fixed sessions survive, while unlocked future work is redistributed around classes, absences, daily capacity, and breaks. Revision-bound approval prevents an outdated proposal overwriting changed work. Completing a task does not claim that study minutes were spent; logging a study session records those minutes separately. No focus timer is included.
+
+### Appearance
+
+Light (porcelain surfaces, ink text, cobalt accents) is the default and is unchanged. Dark is a deliberate ink palette with lightened cobalt for text and a deeper cobalt fill for primary actions, so text, focus rings, form controls, status colors, charts, and imagery stay legible instead of inverted.
+
+- Switch in the sidebar under **Appearance**, in the mobile navigation drawer, or in **Settings → Appearance** (Light, Dark, System). The sidebar switch and the Settings radios stay in sync.
+- The choice is saved in `localStorage` (`classos-theme`) and reapplied on every visit. System follows the device `prefers-color-scheme` and updates live.
+- A blocking inline script in the root layout (per the installed Next.js preventing-flash-before-hydration guide) sets `data-theme` on `<html>` before first paint, so there is no flash of the wrong theme. Shared CSS tokens carry the theme across the landing page, onboarding, workspace pages, dialogs, charts, legal pages, and the offline fallback.
 
 ## Stack
 
